@@ -15,21 +15,6 @@ Persönliche Portfolio-Website von Mir
 - CSS3 (Custom Properties, Animationen, Grid)
 - Vanilla JavaScript
 
-## Länder hinzufügen
-
-In der Datei `index.html` findest du folgendes Array:
-
-```js
-const visitedCountries = [
-  { id: 'CH', name: 'Schweiz',     flag: '🇨🇭' },
-  { id: 'DE', name: 'Deutschland', flag: '🇩🇪' },
-  // weitere Länder hier einfügen...
-];
-```
-
-Einfach eine neue Zeile mit dem ISO-Code des Landes hinzufügen.
-ISO-Codes findest du hier: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
-
 ## Geplante Erweiterungen
 
 - [ ] Guild Wars 2 API — Live-Account-Daten
