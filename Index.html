@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Miro Lacoste</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    #home{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:0 5rem;}
+    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.035) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 20%,transparent 100%);}
+    .orb{position:absolute;border-radius:50%;pointer-events:none;}
+    .orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(0,229,255,0.06) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-50%);}
+    .orb2{width:350px;height:350px;background:radial-gradient(circle,rgba(255,60,110,0.05) 0%,transparent 70%);top:15%;right:8%;}
+    .orb3{width:250px;height:250px;background:radial-gradient(circle,rgba(127,255,110,0.04) 0%,transparent 70%);bottom:15%;left:8%;}
+    .hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr 240px;gap:4rem;align-items:center;width:100%;max-width:1100px;}
+    .h-eye{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1.6rem;opacity:0;animation:fadeUp 0.6s ease forwards 0.2s;}
+    .h-eye::before{content:'> ';color:var(--muted);}
+    .h-title{font-family:'Rajdhani',sans-serif;font-size:clamp(4rem,9vw,8rem);font-weight:700;line-height:0.88;text-transform:uppercase;color:#fff;letter-spacing:-0.02em;opacity:0;animation:fadeUp 0.7s ease forwards 0.35s;}
+    .h-title .a{color:var(--accent);display:block;}
+    .h-desc{margin-top:2rem;font-size:0.95rem;line-height:1.9;color:var(--text);max-width:480px;opacity:0;animation:fadeUp 0.7s ease forwards 0.55s;}
+    .h-desc strong{color:var(--accent);font-weight:500;}
+    .h-chips{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:1.8rem;opacity:0;animation:fadeUp 0.7s ease forwards 0.7s;}
+    .chip{font-family:'Share Tech Mono',monospace;font-size:0.68rem;padding:0.35rem 0.9rem;border:1px solid var(--border);color:var(--muted);letter-spacing:0.1em;}
+    .chip.on{border-color:var(--accent);color:var(--accent);}
+    .h-cta{display:flex;gap:1rem;margin-top:2.5rem;flex-wrap:wrap;opacity:0;animation:fadeUp 0.7s ease forwards 0.85s;}
+    .panel-wrap{opacity:0;animation:fadeUp 0.8s ease forwards 1s;}
+    .panel{border:1px solid var(--border);background:rgba(10,14,22,0.7);padding:1.5rem;backdrop-filter:blur(8px);}
+    .panel-head{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid var(--border);}
+    .prow{display:flex;align-items:center;gap:0.7rem;padding:0.55rem 0;border-bottom:1px solid rgba(0,229,255,0.05);font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--text);}
+    .prow:last-child{border-bottom:none;}
+    .pdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:var(--accent3);box-shadow:0 0 6px var(--accent3);animation:pulse 2s ease infinite;}
+    .pdot.r{background:var(--accent2);box-shadow:0 0 6px var(--accent2);}
+    .pdot.off{background:var(--muted);box-shadow:none;animation:none;}
+    .scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:0.5rem;opacity:0;animation:fadeUp 0.6s ease forwards 1.4s;}
+    .sarr{width:1px;height:40px;background:linear-gradient(to bottom,var(--muted),transparent);animation:sa 1.5s ease infinite;}
+    @keyframes sa{0%{transform:scaleY(0);transform-origin:top;}50%{transform:scaleY(1);transform-origin:top;}51%{transform:scaleY(1);transform-origin:bottom;}100%{transform:scaleY(0);transform-origin:bottom;}}
+    .nav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);}
+    .nav-card{background:var(--bg2);padding:2.5rem 2rem;text-decoration:none;position:relative;overflow:hidden;transition:background 0.3s;}
+    .nav-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform 0.4s;}
+    .nav-card:hover{background:var(--bg3);}.nav-card:hover::after{transform:scaleX(1);}
+    .nc-icon{font-size:1.8rem;margin-bottom:1rem;display:block;}
+    .nc-title{font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700;text-transform:uppercase;color:#fff;letter-spacing:0.05em;margin-bottom:0.4rem;}
+    .nc-sub{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;}
+    @media(max-width:900px){#home{padding:0 1.5rem;}.hero-inner{grid-template-columns:1fr;}.panel-wrap{display:none;}.nav-grid{grid-template-columns:1fr 1fr;}}
+  </style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="index.html">M<em>.</em>Lacoste</a>
+  <ul class="nav-links">
+    <li><a href="about.html">Über mich</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="travels.html">Reisen</a></li>
+  </ul>
+</nav>
+
+<section id="home">
+  <div class="hero-grid"></div>
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="h-eye">Portfolio — Zürich, Schweiz — 2026</div>
+      <h1 class="h-title">Miro<span class="a">Lacoste</span></h1>
+      <p class="h-desc">Angehender <strong>Java Developer</strong> aus Zürich — ich baue Dinge, spiele Games, fahre Motorrad und spiele Gitarre. Diese Seite ist mein digitaler Steckbrief.</p>
+      <div class="h-chips">
+        <span class="chip on">Java Developer</span>
+        <span class="chip on">Gamer</span>
+        <span class="chip on">Kawasaki Z650</span>
+        <span class="chip on">Gitarre · 8 Jahre</span>
+        <span class="chip">Zürich · CH</span>
+        <span class="chip">Reisender</span>
+      </div>
+      <div class="h-cta">
+        <a href="about.html" class="btn"><span>Über mich</span></a>
+        <a href="games.html" class="btn btn-ghost"><span>Games</span></a>
+      </div>
+    </div>
+    <div class="panel-wrap">
+      <div class="panel">
+        <div class="panel-head">// Status</div>
+        <div class="prow"><div class="pdot"></div>Online</div>
+        <div class="prow"><div class="pdot"></div>GW2 — aktiv</div>
+        <div class="prow"><div class="pdot r"></div>Kawasaki — Garage</div>
+        <div class="prow"><div class="pdot off"></div>Zürich, CH</div>
+        <div class="prow"><div class="pdot off"></div>Java lernen</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>Erkunden</span><div class="sarr"></div></div>
+</section>
+
+<section style="background:var(--bg2);border-top:1px solid var(--border);padding:5rem;">
+  <div class="sec-eye reveal">Navigation</div>
+  <h2 class="sec-title reveal" style="margin-bottom:2.5rem;">Was findest du hier?</h2>
+  <div class="nav-grid reveal">
+    <a class="nav-card" href="about.html"><span class="nc-icon">👤</span><div class="nc-title">Über mich</div><div class="nc-sub">Kawasaki · Gitarre · Bio</div></a>
+    <a class="nav-card" href="games.html"><span class="nc-icon">🎮</span><div class="nc-title">Games</div><div class="nc-sub">Steam · GW2 · Overwatch</div></a>
+    <a class="nav-card" href="travels.html"><span class="nc-icon">🌍</span><div class="nc-title">Reisen</div><div class="nc-sub">Bereiste Länder · Karte</div></a>
+    <a class="nav-card" href="https://github.com/Sepytox" target="_blank"><span class="nc-icon">💻</span><div class="nc-title">GitHub</div><div class="nc-sub">Sepytox · Projekte</div></a>
+  </div>
+</section>
+
+<footer>
+  <div class="ftxt">© 2026 <span>Miro Lacoste</span> — Zürich, CH</div>
+  <div class="ftxt">Design mit <span>Claude AI</span></div>
+</footer>
+<script>document.querySelectorAll('.reveal').forEach(r=>{new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:0.1}).observe(r);});</script>
+</body>
+</html>

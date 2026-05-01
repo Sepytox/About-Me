@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Games — Miro Lacoste</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .page-hero{min-height:40vh;display:flex;align-items:flex-end;padding:8rem 5rem 4rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
+    .page-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(to bottom,black 60%,transparent);}
+    .page-title{font-family:'Rajdhani',sans-serif;font-size:clamp(3rem,7vw,6rem);font-weight:700;text-transform:uppercase;color:#fff;line-height:0.9;position:relative;z-index:2;}
+    .page-title span{color:var(--accent);}
+    .page-eye{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1rem;position:relative;z-index:2;}
+    .page-eye::before{content:'[ ';}.page-eye::after{content:' ]';}
+
+    /* STEAM */
+    #steam{background:var(--bg);}
+    .steam-config{border:1px solid var(--border);background:var(--bg2);padding:1.5rem;margin-bottom:2rem;display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;}
+    .cfg-group{display:flex;flex-direction:column;gap:0.4rem;flex:1;min-width:200px;}
+    .cfg-label{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;}
+    .cfg-input{background:var(--bg);border:1px solid var(--border);color:#fff;font-family:'Share Tech Mono',monospace;font-size:0.8rem;padding:0.65rem 1rem;outline:none;transition:border-color 0.2s;}
+    .cfg-input:focus{border-color:var(--accent);}
+    .steam-note{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.8rem;padding:0.8rem 1rem;border:1px solid var(--border);background:rgba(0,229,255,0.03);}
+    .steam-note a{color:var(--accent);}
+    /* Games grid */
+    .games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);}
+    .game-card{background:var(--bg2);padding:1.8rem;position:relative;overflow:hidden;transition:background 0.3s;}
+    .game-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform 0.4s;}
+    .game-card:hover{background:var(--bg3);}.game-card:hover::after{transform:scaleX(1);}
+    .game-img{width:100%;height:100px;object-fit:cover;margin-bottom:1rem;border:1px solid var(--border);}
+    .game-name{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.4rem;}
+    .game-hours{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent);letter-spacing:0.1em;}
+    .game-last{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.2rem;}
+    /* Loading / error */
+    .steam-status{font-family:'Share Tech Mono',monospace;font-size:0.78rem;letter-spacing:0.1em;padding:3rem;text-align:center;color:var(--muted);border:1px solid var(--border);}
+    .steam-status.loading{color:var(--accent);}
+    .steam-status.error{color:var(--accent2);}
+    .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin-right:0.5rem;vertical-align:middle;}
+
+    /* GW2 */
+    #gw2{background:var(--bg2);border-top:1px solid var(--border);}
+    .gw2-hero{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
+    .info-box{border:1px solid var(--border);background:var(--bg);}
+    .info-box-head{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--accent);letter-spacing:0.2em;text-transform:uppercase;padding:1rem 1.5rem;border-bottom:1px solid var(--border);}
+    .info-row{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid rgba(0,229,255,0.06);}
+    .info-row:last-child{border-bottom:none;}
+    .ir-key{font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;}
+    .ir-val{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:600;color:#fff;}
+    .ir-val.a{color:var(--accent);}
+    .gw2-coming{border:1px solid var(--border);background:rgba(0,229,255,0.03);padding:2rem;text-align:center;}
+    .gw2-coming .big{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:0.5rem;}
+    .gw2-coming .sm{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;}
+
+    /* OW */
+    #overwatch{background:var(--bg);border-top:1px solid var(--border);}
+    .ow-card{border:1px solid var(--border);background:var(--bg2);padding:2.5rem;display:flex;align-items:center;gap:2rem;}
+    .ow-icon{font-size:3rem;flex-shrink:0;}
+    .ow-info h3{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:0.3rem;}
+    .ow-info p{font-size:0.88rem;color:var(--muted);line-height:1.7;}
+    .ow-pill{display:inline-block;margin-top:1rem;font-family:'Share Tech Mono',monospace;font-size:0.62rem;padding:0.3rem 0.8rem;border:1px solid var(--border);color:var(--accent);letter-spacing:0.12em;}
+
+    @media(max-width:900px){
+      .page-hero{padding:7rem 1.5rem 3rem;}
+      section{padding:4rem 1.5rem;}
+      .steam-config{flex-direction:column;}
+      .gw2-hero{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="index.html">M<em>.</em>Lacoste</a>
+  <ul class="nav-links">
+    <li><a href="about.html">Über mich</a></li>
+    <li><a href="games.html" class="active">Games</a></li>
+    <li><a href="travels.html">Reisen</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div>
+    <div class="page-eye">Gaming</div>
+    <h1 class="page-title">Meine<br><span>Spiele</span></h1>
+  </div>
+</div>
+
+<!-- STEAM -->
+<section id="steam">
+  <div class="sec-eye reveal">Steam</div>
+  <h2 class="sec-title reveal">Steam Bibliothek</h2>
+
+  <div class="steam-config reveal">
+    <div class="cfg-group">
+      <div class="cfg-label">Steam API Key</div>
+      <input class="cfg-input" type="password" id="apiKey" placeholder="Dein Steam API Key"/>
+    </div>
+    <div class="cfg-group">
+      <div class="cfg-label">Steam ID / Vanity URL</div>
+      <input class="cfg-input" type="text" id="steamId" placeholder="z.B. Sepytox"/>
+    </div>
+    <button class="btn" onclick="loadSteam()"><span>Laden</span></button>
+  </div>
+  <div class="steam-note reveal">
+    ⚠️ API Key und Steam ID werden nur lokal in deinem Browser gespeichert — niemals auf einem Server.<br>
+    Steam API Key holen: <a href="https://steamcommunity.com/dev/apikey" target="_blank">steamcommunity.com/dev/apikey</a>
+    &nbsp;·&nbsp; Steam ID finden: <a href="https://steamid.io" target="_blank">steamid.io</a>
+  </div>
+
+  <div id="steamContent" style="margin-top:2rem;"></div>
+</section>
+
+<!-- GW2 -->
+<section id="gw2">
+  <div class="sec-eye reveal">Guild Wars 2</div>
+  <h2 class="sec-title reveal">Guild Wars 2</h2>
+  <div class="gw2-hero reveal">
+    <div class="info-box">
+      <div class="info-box-head">// Account Info</div>
+      <div class="info-row"><span class="ir-key">Account</span><span class="ir-val a">Sepytox</span></div>
+      <div class="info-row"><span class="ir-key">Plattform</span><span class="ir-val">PC</span></div>
+      <div class="info-row"><span class="ir-key">Fokus</span><span class="ir-val">PvP · Open World</span></div>
+      <div class="info-row"><span class="ir-key">Spielzeit</span><span class="ir-val">∞</span></div>
+      <div class="info-row"><span class="ir-key">GW2 API</span><span class="ir-val" style="color:var(--accent2)">Kommt bald</span></div>
+    </div>
+    <div>
+      <div class="gw2-coming">
+        <div class="big">⚔️ Live Stats</div>
+        <div class="sm">Guild Wars 2 API Integration<br>kommt in einer zukünftigen Version</div>
+      </div>
+      <div style="margin-top:1rem;" class="gw2-coming">
+        <div class="big">🏆 Achievements</div>
+        <div class="sm">Charaktere · Achievements · Rang<br>werden hier angezeigt sobald API aktiv</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OVERWATCH -->
+<section id="overwatch">
+  <div class="sec-eye reveal">Overwatch</div>
+  <h2 class="sec-title reveal">Overwatch</h2>
+  <div class="ow-card reveal">
+    <div class="ow-icon">🎯</div>
+    <div class="ow-info">
+      <h3>Overwatch 2</h3>
+      <p>Team-Shooter von Blizzard. Ich spiele regelmässig kompetitiv und arbeite daran, meinen Rang zu verbessern. Jedes Match ist ein Lernmoment — ob Erfolg oder Niederlage.</p>
+      <span class="ow-pill">Stats via Blizzard API — kommt bald</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="ftxt">© 2026 <span>Miro Lacoste</span> — Zürich, CH</div>
+  <div class="ftxt">Design mit <span>Claude AI</span></div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════
+// STEAM API LOADER
+// ══════════════════════════════════════════════
+
+// Load saved values
+window.addEventListener('load', () => {
+  const savedKey = localStorage.getItem('steamKey');
+  const savedId  = localStorage.getItem('steamVanity');
+  if (savedKey) document.getElementById('apiKey').value = savedKey;
+  if (savedId)  document.getElementById('steamId').value = savedId;
+  if (savedKey && savedId) loadSteam();
+});
+
+async function loadSteam() {
+  const key    = document.getElementById('apiKey').value.trim();
+  const vanity = document.getElementById('steamId').value.trim();
+  if (!key || !vanity) return showStatus('Bitte API Key und Steam ID eingeben.', 'error');
+
+  localStorage.setItem('steamKey', key);
+  localStorage.setItem('steamVanity', vanity);
+
+  showStatus('<span class="spinner"></span> Verbinde mit Steam...', 'loading');
+
+  try {
+    // Resolve vanity URL to 64-bit Steam ID
+    const resolveUrl = `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=${key}&vanityurl=${vanity}&format=json`;
+    const res1 = await fetchCors(resolveUrl);
+    const data1 = await res1.json();
+
+    if (data1.response.success !== 1) throw new Error('Steam ID nicht gefunden. Prüf die Vanity URL.');
+    const steamId64 = data1.response.steamid;
+
+    // Get recently played games
+    const gamesUrl = `https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=${key}&steamid=${steamId64}&count=12&format=json`;
+    const res2 = await fetchCors(gamesUrl);
+    const data2 = await res2.json();
+
+    const games = data2.response?.games;
+    if (!games || games.length === 0) {
+      // Fallback: get owned games
+      const ownedUrl = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${key}&steamid=${steamId64}&include_appinfo=true&include_played_free_games=true&format=json`;
+      const res3 = await fetchCors(ownedUrl);
+      const data3 = await res3.json();
+      const owned = data3.response?.games || [];
+      owned.sort((a,b) => b.playtime_forever - a.playtime_forever);
+      renderGames(owned.slice(0, 12));
+    } else {
+      renderGames(games);
+    }
+  } catch(e) {
+    showStatus(`⚠️ ${e.message || 'Fehler beim Laden. Steam API erlaubt keine direkten Browser-Anfragen (CORS). Sieh Hinweis unten.'}`, 'error');
+    showCorsNote();
+  }
+}
+
+async function fetchCors(url) {
+  // Try direct first, then CORS proxy
+  try {
+    const r = await fetch(url);
+    if (r.ok) return r;
+  } catch(e) {}
+  // Fallback: cors proxy
+  return fetch('https://corsproxy.io/?' + encodeURIComponent(url));
+}
+
+function renderGames(games) {
+  const el = document.getElementById('steamContent');
+  if (!games.length) { showStatus('Keine Spiele gefunden.', 'error'); return; }
+
+  const html = `
+    <div class="games-grid">
+      ${games.map(g => {
+        const hrs = g.playtime_forever ? Math.round(g.playtime_forever / 60) : 0;
+        const lastHrs = g.playtime_2weeks ? Math.round(g.playtime_2weeks / 60) : null;
+        const imgUrl = g.img_logo_url
+          ? `https://media.steampowered.com/steamcommunity/public/images/apps/${g.appid}/${g.img_logo_url}.jpg`
+          : `https://cdn.cloudflare.steamstatic.com/steam/apps/${g.appid}/header.jpg`;
+        return `
+          <div class="game-card">
+            <img class="game-img" src="https://cdn.cloudflare.steamstatic.com/steam/apps/${g.appid}/header.jpg" onerror="this.style.display='none'" alt="${g.name}"/>
+            <div class="game-name">${g.name}</div>
+            <div class="game-hours">${hrs.toLocaleString('de-CH')} Stunden gespielt</div>
+            ${lastHrs ? `<div class="game-last">Letzte 2 Wochen: ${lastHrs}h</div>` : ''}
+          </div>`;
+      }).join('')}
+    </div>`;
+  el.innerHTML = html;
+}
+
+function showStatus(msg, type) {
+  document.getElementById('steamContent').innerHTML = `<div class="steam-status ${type}">${msg}</div>`;
+}
+
+function showCorsNote() {
+  const note = document.createElement('div');
+  note.className = 'steam-note';
+  note.style.marginTop = '1rem';
+  note.innerHTML = `
+    <strong style="color:var(--accent2)">CORS Hinweis:</strong> Steam erlaubt keine direkten Browser-Anfragen.
+    Wenn du die Seite lokal öffnest, funktioniert der CORS-Proxy eventuell nicht.
+    <br>Lösung: Seite auf einem Webserver hosten (z.B. GitHub Pages) — dann klappt es.`;
+  document.getElementById('steamContent').appendChild(note);
+}
+
+// Scroll reveal
+document.querySelectorAll('.reveal').forEach(r=>{new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:0.1}).observe(r);});
+</script>
+</body>
+</html>

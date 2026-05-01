@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Über mich — Miro Lacoste</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .page-hero{min-height:40vh;display:flex;align-items:flex-end;padding:8rem 5rem 4rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
+    .page-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(to bottom,black 60%,transparent);}
+    .page-title{font-family:'Rajdhani',sans-serif;font-size:clamp(3rem,7vw,6rem);font-weight:700;text-transform:uppercase;color:#fff;line-height:0.9;position:relative;z-index:2;}
+    .page-title span{color:var(--accent);}
+    .page-eye{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1rem;position:relative;z-index:2;}
+    .page-eye::before{content:'[ ';}.page-eye::after{content:' ]';}
+
+    /* BIO */
+    .bio-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:5rem;align-items:start;}
+    .bio-text p{font-size:0.98rem;line-height:1.95;color:var(--text);margin-bottom:1.1rem;}
+    .bio-text p strong{color:var(--accent);font-weight:500;}
+    .bio-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);}
+    .sbox{background:var(--bg);padding:2rem;position:relative;overflow:hidden;}
+    .sbox::before{content:'';position:absolute;top:0;left:0;width:2px;height:0;background:var(--accent);transition:height 0.4s;}
+    .sbox:hover::before{height:100%;}
+    .snum{font-family:'Rajdhani',sans-serif;font-size:2.8rem;font-weight:700;color:var(--accent);line-height:1;}
+    .slbl{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-top:0.4rem;}
+
+    /* KAWASAKI */
+    #moto{background:var(--bg2);border-top:1px solid var(--border);}
+    .moto-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;}
+    .moto-info h3{font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:0.5rem;}
+    .moto-info .sub{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--accent);letter-spacing:0.15em;margin-bottom:2rem;}
+    .moto-specs{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:2rem;}
+    .spec-row{display:flex;justify-content:space-between;align-items:center;background:var(--bg);padding:1rem 1.5rem;}
+    .spec-key{font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;}
+    .spec-val{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:600;color:#fff;}
+    .spec-val.accent{color:var(--accent);}
+    /* KM input */
+    .km-box{border:1px solid var(--border);background:var(--bg);padding:1.5rem;}
+    .km-box label{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;display:block;margin-bottom:0.7rem;}
+    .km-input-wrap{display:flex;gap:0.5rem;}
+    .km-input{flex:1;background:var(--bg2);border:1px solid var(--border);color:#fff;font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:600;padding:0.7rem 1rem;outline:none;transition:border-color 0.2s;}
+    .km-input:focus{border-color:var(--accent);}
+    .km-note{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.5rem;}
+    /* Timer */
+    .timer-card{border:1px solid var(--border);background:var(--bg);padding:2rem;text-align:center;}
+    .timer-label{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1rem;}
+    .timer-display{font-family:'Rajdhani',sans-serif;font-size:2rem;font-weight:700;color:var(--accent3);letter-spacing:0.05em;line-height:1.2;}
+    .timer-since{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);margin-top:0.5rem;}
+
+    /* GUITAR */
+    #guitar{background:var(--bg);border-top:1px solid var(--border);}
+    .guitar-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;}
+    .guitar-info h3{font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:0.5rem;}
+    .guitar-info .sub{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--accent);letter-spacing:0.15em;margin-bottom:2rem;}
+    .guitar-facts{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);}
+    .fact-row{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);padding:1rem 1.5rem;}
+    .fact-key{font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;}
+    .fact-val{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:600;color:#fff;}
+    /* Image upload */
+    .img-upload-area{border:1px dashed var(--border);background:var(--bg2);padding:3rem 2rem;text-align:center;cursor:pointer;transition:border-color 0.3s,background 0.3s;position:relative;}
+    .img-upload-area:hover{border-color:var(--accent);background:rgba(0,229,255,0.03);}
+    .img-upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+    .img-upload-icon{font-size:2rem;margin-bottom:0.8rem;}
+    .img-upload-txt{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--muted);letter-spacing:0.1em;}
+    .img-preview{width:100%;height:300px;object-fit:cover;display:none;border:1px solid var(--border);}
+
+    @media(max-width:900px){
+      .page-hero{padding:7rem 1.5rem 3rem;}
+      section{padding:4rem 1.5rem;}
+      .bio-grid,.moto-layout,.guitar-layout{grid-template-columns:1fr;gap:2rem;}
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="index.html">M<em>.</em>Lacoste</a>
+  <ul class="nav-links">
+    <li><a href="about.html" class="active">Über mich</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="travels.html">Reisen</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div>
+    <div class="page-eye">Info</div>
+    <h1 class="page-title">Über<br><span>mich</span></h1>
+  </div>
+</div>
+
+<!-- BIO -->
+<section style="background:var(--bg);">
+  <div class="sec-eye reveal">Biografie</div>
+  <div class="bio-grid">
+    <div class="bio-text reveal">
+      <p>Hey! Ich bin <strong>Miro Lacoste</strong>, ein angehender Developer aus Zürich. Ich lerne gerade Java und baue meine ersten Projekte — von Konsolenspielen bis zu dieser Website hier.</p>
+      <p>Wenn ich nicht code, bin ich auf <strong>Guild Wars 2</strong> unterwegs oder spiele Overwatch. Auf meiner <strong>Kawasaki Z650</strong> drehe ich bei gutem Wetter gerne Runden durch die Schweizer Landschaft.</p>
+      <p>Seit <strong>8 Jahren</strong> spiele ich Gitarre — Mittelstufe, aber mit viel Leidenschaft. Ich reise gerne und habe bereits einige Länder erkundet — am liebsten auf zwei Rädern.</p>
+    </div>
+    <div class="bio-stats reveal">
+      <div class="sbox"><div class="snum">8</div><div class="slbl">Jahre Gitarre</div></div>
+      <div class="sbox"><div class="snum">2021</div><div class="slbl">Kawasaki seit</div></div>
+      <div class="sbox"><div class="snum">∞</div><div class="slbl">GW2 Stunden</div></div>
+      <div class="sbox"><div class="snum">CH</div><div class="slbl">Zürich</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- KAWASAKI -->
+<section id="moto">
+  <div class="sec-eye reveal">Motorrad</div>
+  <h2 class="sec-title reveal">Kawasaki Z650</h2>
+  <div class="moto-layout">
+    <div class="reveal">
+      <div class="moto-info">
+        <h3>Kawasaki Z650</h3>
+        <div class="sub">// Naked Bike · 649cc · 68 PS</div>
+      </div>
+      <div class="moto-specs">
+        <div class="spec-row"><span class="spec-key">Modell</span><span class="spec-val">Kawasaki Z650</span></div>
+        <div class="spec-row"><span class="spec-key">Hubraum</span><span class="spec-val">649 cc</span></div>
+        <div class="spec-row"><span class="spec-key">Leistung</span><span class="spec-val">68 PS</span></div>
+        <div class="spec-row"><span class="spec-key">Typ</span><span class="spec-val">Naked Bike</span></div>
+        <div class="spec-row"><span class="spec-key">Fahrer seit</span><span class="spec-val accent" id="seit-jahr">2021</span></div>
+        <div class="spec-row">
+          <span class="spec-key">Kilometer</span>
+          <span class="spec-val accent" id="km-display">— km</span>
+        </div>
+      </div>
+      <div class="km-box">
+        <label>Kilometerstand eintragen</label>
+        <div class="km-input-wrap">
+          <input class="km-input" type="number" id="kmInput" placeholder="z.B. 12500" min="0"/>
+          <button class="btn btn-sm" onclick="saveKm()"><span>Speichern</span></button>
+        </div>
+        <div class="km-note">Wird lokal gespeichert</div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="timer-card" style="margin-bottom:1rem;">
+        <div class="timer-label">// Fahrer seit</div>
+        <div class="timer-display" id="timerDisplay">—</div>
+        <div class="timer-since" id="timerSince">seit 01.01.2021</div>
+      </div>
+      <div class="timer-card">
+        <div class="timer-label">// Startdatum anpassen</div>
+        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+          <input type="date" id="startDate" style="flex:1;background:var(--bg2);border:1px solid var(--border);color:#fff;font-family:'Share Tech Mono',monospace;font-size:0.8rem;padding:0.6rem;outline:none;" onchange="updateTimer()"/>
+        </div>
+        <div class="km-note" style="margin-top:0.5rem;">Startdatum deiner Z650</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GUITAR -->
+<section id="guitar">
+  <div class="sec-eye reveal">Musik</div>
+  <h2 class="sec-title reveal">Gitarre</h2>
+  <div class="guitar-layout">
+    <div class="reveal">
+      <div class="guitar-info">
+        <h3>Gitarre</h3>
+        <div class="sub">// 8 Jahre · Mittelstufe</div>
+      </div>
+      <div class="guitar-facts">
+        <div class="fact-row"><span class="fact-key">Instrument</span><span class="fact-val">Gitarre</span></div>
+        <div class="fact-row"><span class="fact-key">Erfahrung</span><span class="fact-val">8 Jahre</span></div>
+        <div class="fact-row"><span class="fact-key">Level</span><span class="fact-val">Mittelstufe</span></div>
+        <div class="fact-row"><span class="fact-key">Modell</span><span class="fact-val" id="guitarModel">—</span></div>
+      </div>
+      <div class="km-box" style="margin-top:1rem;">
+        <label>Gitarren-Modell eintragen</label>
+        <div class="km-input-wrap">
+          <input class="km-input" type="text" id="guitarInput" placeholder="z.B. Fender Stratocaster"/>
+          <button class="btn btn-sm" onclick="saveGuitar()"><span>Speichern</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="img-upload-area" id="uploadArea" onclick="document.getElementById('guitarImg').click()">
+        <input type="file" id="guitarImg" accept="image/*" onchange="previewImg(this)" style="display:none"/>
+        <img class="img-preview" id="imgPreview" alt="Gitarre"/>
+        <div id="uploadPlaceholder">
+          <div class="img-upload-icon">🎸</div>
+          <div class="img-upload-txt">Bild deiner Gitarre hochladen<br><br>JPG · PNG · WEBP</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="ftxt">© 2026 <span>Miro Lacoste</span> — Zürich, CH</div>
+  <div class="ftxt">Design mit <span>Claude AI</span></div>
+</footer>
+
+<script>
+// ── Kawasaki Timer ──
+function updateTimer() {
+  const stored = localStorage.getItem('motoStart') || '2021-01-01';
+  const input  = document.getElementById('startDate');
+  if (!input.value) input.value = stored;
+
+  const start = new Date(input.value);
+  const now   = new Date();
+  const diff  = now - start;
+
+  const years   = Math.floor(diff / (1000*60*60*24*365.25));
+  const months  = Math.floor((diff % (1000*60*60*24*365.25)) / (1000*60*60*24*30.44));
+  const days    = Math.floor((diff % (1000*60*60*24*30.44))  / (1000*60*60*24));
+
+  let txt = '';
+  if (years > 0)  txt += `${years} Jahr${years>1?'e':''}`;
+  if (months > 0) txt += (txt ? ', ' : '') + `${months} Monat${months>1?'e':''}`;
+  if (days > 0 && years === 0) txt += (txt ? ', ' : '') + `${days} Tag${days>1?'e':''}`;
+
+  document.getElementById('timerDisplay').textContent = txt || '0 Tage';
+  const d = start.toLocaleDateString('de-CH');
+  document.getElementById('timerSince').textContent = `seit ${d}`;
+  localStorage.setItem('motoStart', input.value);
+}
+
+// ── KM ──
+function saveKm() {
+  const v = document.getElementById('kmInput').value;
+  if (!v) return;
+  localStorage.setItem('motoKm', v);
+  document.getElementById('km-display').textContent = Number(v).toLocaleString('de-CH') + ' km';
+}
+
+// ── Guitar ──
+function saveGuitar() {
+  const v = document.getElementById('guitarInput').value;
+  if (!v) return;
+  localStorage.setItem('guitarModel', v);
+  document.getElementById('guitarModel').textContent = v;
+}
+
+// ── Image preview ──
+function previewImg(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('imgPreview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('uploadPlaceholder').style.display = 'none';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// ── Load saved ──
+window.addEventListener('load', () => {
+  updateTimer();
+  const km = localStorage.getItem('motoKm');
+  if (km) { document.getElementById('km-display').textContent = Number(km).toLocaleString('de-CH') + ' km'; document.getElementById('kmInput').value = km; }
+  const gm = localStorage.getItem('guitarModel');
+  if (gm) { document.getElementById('guitarModel').textContent = gm; document.getElementById('guitarInput').value = gm; }
+  setInterval(updateTimer, 60000);
+});
+
+// Scroll reveal
+document.querySelectorAll('.reveal').forEach(r=>{new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:0.1}).observe(r);});
+</script>
+</body>
+</html>

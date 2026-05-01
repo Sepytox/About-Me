@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Reisen — Miro Lacoste</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .page-hero{min-height:40vh;display:flex;align-items:flex-end;padding:8rem 5rem 4rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
+    .page-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(to bottom,black 60%,transparent);}
+    .page-title{font-family:'Rajdhani',sans-serif;font-size:clamp(3rem,7vw,6rem);font-weight:700;text-transform:uppercase;color:#fff;line-height:0.9;position:relative;z-index:2;}
+    .page-title span{color:var(--accent);}
+    .page-eye{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1rem;position:relative;z-index:2;}
+    .page-eye::before{content:'[ ';}.page-eye::after{content:' ]';}
+
+    /* MAP */
+    #map-section{background:var(--bg);}
+    .map-layout{display:grid;grid-template-columns:1fr 280px;gap:2.5rem;align-items:start;}
+    .map-wrap{border:1px solid var(--border);background:var(--bg2);position:relative;overflow:hidden;}
+    #worldMap{width:100%;height:auto;display:block;}
+    #worldMap path{fill:#1a2a3a;stroke:#0a0e16;stroke-width:0.4;transition:fill 0.3s;cursor:pointer;}
+    #worldMap path.visited{fill:var(--accent3);filter:drop-shadow(0 0 4px rgba(127,255,110,0.4));}
+    #worldMap path:hover{fill:var(--accent);}
+    .map-tooltip{position:absolute;background:var(--bg3);border:1px solid var(--border);padding:0.4rem 0.9rem;font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--accent);pointer-events:none;display:none;z-index:10;letter-spacing:0.1em;white-space:nowrap;}
+    .map-legend{display:flex;gap:1.5rem;padding:1rem 1.5rem;border-top:1px solid var(--border);}
+    .leg-item{display:flex;align-items:center;gap:0.5rem;font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);}
+    .leg-dot{width:10px;height:10px;border-radius:2px;}
+
+    /* SIDEBAR */
+    .country-sidebar h3{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid var(--border);}
+    .clist{list-style:none;display:flex;flex-direction:column;gap:3px;max-height:420px;overflow-y:auto;padding-right:4px;}
+    .clist::-webkit-scrollbar{width:2px;}.clist::-webkit-scrollbar-thumb{background:var(--muted);}
+    .citem{display:flex;align-items:center;gap:0.6rem;padding:0.45rem 0.7rem;border:1px solid transparent;transition:border-color 0.2s,background 0.2s;font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text);letter-spacing:0.04em;cursor:default;}
+    .citem:hover{border-color:var(--border);background:rgba(0,229,255,0.04);}
+    .ccount{margin-top:1.2rem;padding:1.2rem;background:var(--bg);border:1px solid var(--border);text-align:center;}
+    .ccount .big{font-family:'Rajdhani',sans-serif;font-size:3rem;font-weight:700;color:var(--accent3);line-height:1;}
+    .ccount .sm{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.15em;margin-top:0.3rem;}
+
+    @media(max-width:900px){
+      .page-hero{padding:7rem 1.5rem 3rem;}
+      section{padding:4rem 1.5rem;}
+      .map-layout{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="index.html">M<em>.</em>Lacoste</a>
+  <ul class="nav-links">
+    <li><a href="about.html">Über mich</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="travels.html" class="active">Reisen</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div>
+    <div class="page-eye">Reisen</div>
+    <h1 class="page-title">Bereiste<br><span>Länder</span></h1>
+  </div>
+</div>
+
+<section id="map-section">
+  <div class="sec-eye reveal">Weltkarte</div>
+  <h2 class="sec-title reveal">Meine Reisen</h2>
+  <div class="map-layout reveal">
+    <div>
+      <div class="map-wrap">
+        <div class="map-tooltip" id="tooltip"></div>
+        <svg id="worldMap" viewBox="0 0 2000 1000" xmlns="http://www.w3.org/2000/svg">
+          <!-- Europe -->
+          <path id="CH" data-name="Schweiz"        d="M970,380 L980,375 L990,378 L988,390 L975,392 L965,386Z"/>
+          <path id="DE" data-name="Deutschland"    d="M960,330 L990,322 L1005,330 L1008,355 L995,368 L975,372 L958,360 L952,343Z"/>
+          <path id="AT" data-name="Österreich"     d="M990,370 L1020,365 L1030,372 L1025,385 L1000,387 L985,382Z"/>
+          <path id="FR" data-name="Frankreich"     d="M920,340 L955,330 L962,345 L960,375 L948,388 L920,388 L905,375 L908,352Z"/>
+          <path id="IT" data-name="Italien"        d="M965,385 L990,382 L998,395 L995,430 L985,460 L970,470 L958,455 L952,430 L950,400Z"/>
+          <path id="ES" data-name="Spanien"        d="M880,375 L918,368 L922,390 L915,420 L890,428 L860,420 L852,400 L862,380Z"/>
+          <path id="PT" data-name="Portugal"       d="M850,378 L862,375 L863,402 L856,422 L842,418 L838,398Z"/>
+          <path id="GB" data-name="Grossbritannien"d="M905,285 L925,278 L930,300 L920,325 L905,328 L892,315 L895,296Z"/>
+          <path id="IE" data-name="Irland"         d="M885,292 L898,288 L900,308 L888,315 L878,308Z"/>
+          <path id="NL" data-name="Niederlande"    d="M948,308 L965,305 L968,320 L955,324 L942,318Z"/>
+          <path id="BE" data-name="Belgien"        d="M935,318 L950,315 L952,330 L938,334 L924,328Z"/>
+          <path id="PL" data-name="Polen"          d="M1005,310 L1045,302 L1055,318 L1048,342 L1015,348 L998,335Z"/>
+          <path id="CZ" data-name="Tschechien"     d="M998,330 L1018,325 L1025,338 L1010,346 L992,340Z"/>
+          <path id="SE" data-name="Schweden"       d="M985,230 L1005,220 L1012,248 L1008,275 L995,282 L980,265 L978,242Z"/>
+          <path id="NO" data-name="Norwegen"       d="M958,210 L985,198 L992,220 L988,245 L970,250 L952,235Z"/>
+          <path id="DK" data-name="Dänemark"       d="M970,275 L985,270 L988,285 L975,292 L960,286Z"/>
+          <path id="FI" data-name="Finnland"       d="M1008,215 L1032,205 L1040,232 L1035,260 L1015,268 L1005,248Z"/>
+          <path id="GR" data-name="Griechenland"   d="M1040,420 L1058,412 L1065,432 L1055,448 L1038,445 L1030,432Z"/>
+          <path id="HR" data-name="Kroatien"       d="M1005,390 L1022,385 L1026,402 L1015,408 L1000,402Z"/>
+          <path id="TR" data-name="Türkei"         d="M1068,390 L1115,378 L1122,400 L1108,415 L1068,418 L1055,406Z"/>
+          <path id="RU" data-name="Russland"       d="M1045,240 L1280,195 L1320,230 L1310,295 L1210,308 L1100,305 L1058,285 L1048,258Z"/>
+          <path id="UA" data-name="Ukraine"        d="M1050,330 L1095,320 L1108,340 L1100,360 L1060,365 L1040,350Z"/>
+          <path id="HU" data-name="Ungarn"         d="M1020,355 L1045,350 L1050,365 L1035,372 L1015,368Z"/>
+          <path id="RO" data-name="Rumänien"       d="M1045,355 L1075,348 L1082,368 L1065,380 L1042,375Z"/>
+
+          <!-- Americas -->
+          <path id="US" data-name="USA"            d="M295,340 L460,320 L475,368 L470,420 L430,432 L340,428 L285,408 L278,375Z"/>
+          <path id="CA" data-name="Kanada"         d="M280,230 L495,210 L505,295 L465,305 L400,308 L300,312 L265,285Z"/>
+          <path id="MX" data-name="Mexiko"         d="M295,428 L380,415 L392,450 L375,478 L312,480 L278,458Z"/>
+          <path id="BR" data-name="Brasilien"      d="M445,545 L558,522 L580,595 L560,655 L490,660 L430,625 L415,570Z"/>
+          <path id="AR" data-name="Argentinien"    d="M440,660 L490,655 L495,730 L468,762 L438,745 L425,700Z"/>
+          <path id="CO" data-name="Kolumbien"      d="M380,510 L425,500 L430,530 L408,545 L378,538Z"/>
+          <path id="PE" data-name="Peru"           d="M368,560 L412,548 L415,600 L395,625 L362,615 L355,585Z"/>
+          <path id="CL" data-name="Chile"          d="M395,628 L428,620 L435,698 L410,740 L388,730 L380,670Z"/>
+
+          <!-- Asia -->
+          <path id="CN" data-name="China"          d="M1335,325 L1490,305 L1510,365 L1495,422 L1400,430 L1338,405 L1322,368Z"/>
+          <path id="JP" data-name="Japan"          d="M1525,318 L1545,310 L1552,345 L1540,368 L1520,362 L1515,338Z"/>
+          <path id="IN" data-name="Indien"         d="M1248,395 L1335,380 L1345,455 L1322,510 L1268,515 L1238,478 L1235,425Z"/>
+          <path id="TH" data-name="Thailand"       d="M1375,435 L1405,425 L1410,475 L1395,495 L1370,488 L1362,460Z"/>
+          <path id="SA" data-name="Saudi-Arabien"  d="M1118,415 L1175,405 L1182,450 L1162,475 L1120,472 L1108,448Z"/>
+          <path id="AE" data-name="VAE"            d="M1178,445 L1200,440 L1205,462 L1185,468 L1172,458Z"/>
+          <path id="ID" data-name="Indonesien"     d="M1395,520 L1468,508 L1475,535 L1455,548 L1395,548 L1382,535Z"/>
+          <path id="KR" data-name="Südkorea"       d="M1498,328 L1515,322 L1518,345 L1505,352 L1492,344Z"/>
+          <path id="VN" data-name="Vietnam"        d="M1408,428 L1425,420 L1432,462 L1415,478 L1400,468 L1398,442Z"/>
+
+          <!-- Africa -->
+          <path id="EG" data-name="Ägypten"        d="M1075,418 L1112,412 L1115,448 L1095,460 L1068,455 L1062,435Z"/>
+          <path id="MA" data-name="Marokko"        d="M888,418 L922,412 L925,445 L905,458 L880,452 L875,432Z"/>
+          <path id="ZA" data-name="Südafrika"      d="M1035,690 L1082,682 L1088,728 L1062,748 L1030,738 L1022,710Z"/>
+          <path id="KE" data-name="Kenia"          d="M1115,565 L1148,558 L1152,598 L1132,615 L1108,608 L1102,580Z"/>
+          <path id="NG" data-name="Nigeria"        d="M978,548 L1022,540 L1028,580 L1005,598 L972,592 L965,562Z"/>
+          <path id="TZ" data-name="Tansania"       d="M1085,598 L1122,590 L1128,632 L1108,648 L1078,642 L1072,615Z"/>
+          <path id="ET" data-name="Äthiopien"      d="M1118,520 L1158,512 L1162,550 L1142,565 L1112,558 L1108,532Z"/>
+
+          <!-- Oceania -->
+          <path id="AU" data-name="Australien"     d="M1475,595 L1605,572 L1625,648 L1605,710 L1512,718 L1462,675 L1455,630Z"/>
+          <path id="NZ" data-name="Neuseeland"     d="M1642,682 L1665,672 L1668,710 L1652,728 L1632,720 L1628,698Z"/>
+        </svg>
+        <div class="map-legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#1a2a3a"></div>Nicht besucht</div>
+          <div class="leg-item"><div class="leg-dot" style="background:var(--accent3)"></div>Besucht</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="country-sidebar">
+      <h3>🌍 Besucht</h3>
+      <ul class="clist" id="countryList"></ul>
+      <div class="ccount">
+        <div class="big" id="countNum">0</div>
+        <div class="sm">Länder bereist</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="ftxt">© 2026 <span>Miro Lacoste</span> — Zürich, CH</div>
+  <div class="ftxt">Design mit <span>Claude AI</span></div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════
+// VISITED COUNTRIES — hier Länder eintragen!
+// id = SVG Pfad ID oben, name = Anzeigename, flag = Emoji
+// ══════════════════════════════════════════
+const visited = [
+  { id:'CH', name:'Schweiz',     flag:'🇨🇭' },
+  { id:'DE', name:'Deutschland', flag:'🇩🇪' },
+  { id:'AT', name:'Österreich',  flag:'🇦🇹' },
+  { id:'IT', name:'Italien',     flag:'🇮🇹' },
+  { id:'FR', name:'Frankreich',  flag:'🇫🇷' },
+  // ── Weitere Länder hier einfügen ──
+  // { id:'ES', name:'Spanien',        flag:'🇪🇸' },
+  // { id:'PT', name:'Portugal',       flag:'🇵🇹' },
+  // { id:'GR', name:'Griechenland',   flag:'🇬🇷' },
+  // { id:'HR', name:'Kroatien',       flag:'🇭🇷' },
+  // { id:'TR', name:'Türkei',         flag:'🇹🇷' },
+  // { id:'US', name:'USA',            flag:'🇺🇸' },
+  // { id:'JP', name:'Japan',          flag:'🇯🇵' },
+  // { id:'TH', name:'Thailand',       flag:'🇹🇭' },
+  // { id:'MA', name:'Marokko',        flag:'🇲🇦' },
+  // { id:'AE', name:'VAE',            flag:'🇦🇪' },
+  // { id:'AU', name:'Australien',     flag:'🇦🇺' },
+];
+
+// Mark visited
+visited.forEach(c => {
+  const el = document.getElementById(c.id);
+  if (el) el.classList.add('visited');
+});
+
+// Sidebar
+const list = document.getElementById('countryList');
+visited.forEach(c => {
+  const li = document.createElement('li');
+  li.className = 'citem';
+  li.innerHTML = `<span>${c.flag}</span><span>${c.name}</span>`;
+  li.addEventListener('mouseenter', () => { const el = document.getElementById(c.id); if (el) el.style.fill = 'var(--accent)'; });
+  li.addEventListener('mouseleave', () => { const el = document.getElementById(c.id); if (el) el.style.fill = ''; });
+  list.appendChild(li);
+});
+document.getElementById('countNum').textContent = visited.length;
+
+// Tooltip
+const tooltip = document.getElementById('tooltip');
+const mapWrap  = document.querySelector('.map-wrap');
+document.querySelectorAll('#worldMap path').forEach(p => {
+  p.addEventListener('mousemove', e => {
+    const r = mapWrap.getBoundingClientRect();
+    tooltip.style.display = 'block';
+    tooltip.style.left = (e.clientX - r.left + 12) + 'px';
+    tooltip.style.top  = (e.clientY - r.top  + 12) + 'px';
+    tooltip.textContent = p.dataset.name || p.id;
+  });
+  p.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+});
+
+// Scroll reveal
+document.querySelectorAll('.reveal').forEach(r=>{new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:0.1}).observe(r);});
+</script>
+</body>
+</html>
