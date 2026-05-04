@@ -6,13 +6,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
   <style>
-    .page-hero{min-height:40vh;display:flex;align-items:flex-end;padding:8rem 5rem 4rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
-    .page-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(to bottom,black 60%,transparent);}
-    .page-title{font-family:'Rajdhani',sans-serif;font-size:clamp(3rem,7vw,6rem);font-weight:700;text-transform:uppercase;color:#fff;line-height:0.9;position:relative;z-index:2;}
-    .page-title span{color:var(--accent);}
-    .page-eye{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1rem;position:relative;z-index:2;}
-    .page-eye::before{content:'[ ';}.page-eye::after{content:' ]';}
-
     /* BIO */
     .bio-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:5rem;align-items:start;}
     .bio-text p{font-size:0.98rem;line-height:1.95;color:var(--text);margin-bottom:1.1rem;}
@@ -30,17 +23,7 @@
     .moto-info h3{font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:0.5rem;}
     .moto-info .sub{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--accent);letter-spacing:0.15em;margin-bottom:2rem;}
     .moto-specs{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:2rem;}
-    .spec-row{display:flex;justify-content:space-between;align-items:center;background:var(--bg);padding:1rem 1.5rem;}
-    .spec-key{font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;}
-    .spec-val{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:600;color:#fff;}
-    .spec-val.accent{color:var(--accent);}
-    /* KM input */
-    .km-box{border:1px solid var(--border);background:var(--bg);padding:1.5rem;}
-    .km-box label{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;display:block;margin-bottom:0.7rem;}
-    .km-input-wrap{display:flex;gap:0.5rem;}
-    .km-input{flex:1;background:var(--bg2);border:1px solid var(--border);color:#fff;font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:600;padding:0.7rem 1rem;outline:none;transition:border-color 0.2s;}
-    .km-input:focus{border-color:var(--accent);}
-    .km-note{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.5rem;}
+    .spec-row{background:var(--bg);}
     /* Timer */
     .timer-card{border:1px solid var(--border);background:var(--bg);padding:2rem;text-align:center;}
     .timer-label{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1rem;}
@@ -53,9 +36,7 @@
     .guitar-info h3{font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:0.5rem;}
     .guitar-info .sub{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--accent);letter-spacing:0.15em;margin-bottom:2rem;}
     .guitar-facts{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);}
-    .fact-row{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);padding:1rem 1.5rem;}
-    .fact-key{font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;}
-    .fact-val{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:600;color:#fff;}
+    .fact-row{background:var(--bg2);}
     /* Image upload */
     .img-upload-area{border:1px dashed var(--border);background:var(--bg2);padding:3rem 2rem;text-align:center;cursor:pointer;transition:border-color 0.3s,background 0.3s;position:relative;}
     .img-upload-area:hover{border-color:var(--accent);background:rgba(0,229,255,0.03);}
@@ -65,8 +46,6 @@
     .img-preview{width:100%;height:300px;object-fit:cover;display:none;border:1px solid var(--border);}
 
     @media(max-width:900px){
-      .page-hero{padding:7rem 1.5rem 3rem;}
-      section{padding:4rem 1.5rem;}
       .bio-grid,.moto-layout,.guitar-layout{grid-template-columns:1fr;gap:2rem;}
     }
   </style>

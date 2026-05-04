@@ -6,13 +6,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
   <style>
-    .page-hero{min-height:40vh;display:flex;align-items:flex-end;padding:8rem 5rem 4rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
-    .page-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(to bottom,black 60%,transparent);}
-    .page-title{font-family:'Rajdhani',sans-serif;font-size:clamp(3rem,7vw,6rem);font-weight:700;text-transform:uppercase;color:#fff;line-height:0.9;position:relative;z-index:2;}
-    .page-title span{color:var(--accent);}
-    .page-eye{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1rem;position:relative;z-index:2;}
-    .page-eye::before{content:'[ ';}.page-eye::after{content:' ]';}
-
     /* MAP */
     #map-section{background:var(--bg);}
     .map-layout{display:grid;grid-template-columns:1fr 280px;gap:2.5rem;align-items:start;}
@@ -37,8 +30,6 @@
     .ccount .sm{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.15em;margin-top:0.3rem;}
 
     @media(max-width:900px){
-      .page-hero{padding:7rem 1.5rem 3rem;}
-      section{padding:4rem 1.5rem;}
       .map-layout{grid-template-columns:1fr;}
     }
   </style>

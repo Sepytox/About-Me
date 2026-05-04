@@ -34,3 +34,33 @@ footer{border-top:1px solid var(--border);padding:1.8rem 5rem;display:flex;justi
 @keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
 @keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── PAGE HERO (shared across About, Games, Travels) ── */
+.page-hero{min-height:40vh;display:flex;align-items:flex-end;padding:8rem 5rem 4rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
+.page-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(to bottom,black 60%,transparent);}
+.page-title{font-family:'Rajdhani',sans-serif;font-size:clamp(3rem,7vw,6rem);font-weight:700;text-transform:uppercase;color:#fff;line-height:0.9;position:relative;z-index:2;}
+.page-title span{color:var(--accent);}
+.page-eye{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1rem;position:relative;z-index:2;}
+.page-eye::before{content:'[ ';}.page-eye::after{content:' ]';}
+
+/* ── SHARED INPUT / KM-BOX ── */
+.km-box{border:1px solid var(--border);background:var(--bg);padding:1.5rem;}
+.km-box label{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;display:block;margin-bottom:0.7rem;}
+.km-input-wrap{display:flex;gap:0.5rem;}
+.km-input{flex:1;background:var(--bg2);border:1px solid var(--border);color:#fff;font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:600;padding:0.7rem 1rem;outline:none;transition:border-color 0.2s;}
+.km-input:focus{border-color:var(--accent);}
+.km-note{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.5rem;}
+
+/* ── SHARED SPEC / FACT ROWS ── */
+.spec-row,.fact-row{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;}
+.spec-key,.fact-key{font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;}
+.spec-val,.fact-val{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:600;color:#fff;}
+.spec-val.accent{color:var(--accent);}
+
+/* ── SHARED RESPONSIVE ── */
+@media(max-width:900px){
+  .page-hero{padding:7rem 1.5rem 3rem;}
+  section{padding:4rem 1.5rem;}
+  nav{padding:1.2rem 1.5rem;}
+  footer{padding:1.8rem 1.5rem;}
+}
