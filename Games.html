@@ -43,6 +43,26 @@
     .gw2-coming{border:1px solid var(--border);background:rgba(0,229,255,0.03);padding:2rem;text-align:center;}
     .gw2-coming .big{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:0.5rem;}
     .gw2-coming .sm{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;}
+    /* GW2 API Key input */
+    .gw2-config{border:1px solid var(--border);background:var(--bg);padding:1.5rem;margin-bottom:2rem;display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;}
+    /* Armory list */
+    .armory-list{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:1rem;}
+    .armory-item{display:flex;align-items:center;gap:1rem;background:var(--bg);padding:0.8rem 1.2rem;transition:background 0.2s;}
+    .armory-item:hover{background:var(--bg3);}
+    .armory-icon{width:36px;height:36px;border:1px solid var(--border);flex-shrink:0;object-fit:cover;}
+    .armory-name{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;color:#fff;flex:1;}
+    .armory-type{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.08em;}
+    .armory-price{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--accent3);letter-spacing:0.05em;text-align:right;white-space:nowrap;}
+    .armory-price.bound{color:var(--muted);}
+    /* Total value box */
+    .gw2-total{border:1px solid var(--border);background:var(--bg);padding:1.5rem;text-align:center;}
+    .gw2-total .lbl{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.5rem;}
+    .gw2-total .val{font-family:'Rajdhani',sans-serif;font-size:2.2rem;font-weight:700;color:var(--accent3);line-height:1;}
+    .gw2-total .sub{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--muted);margin-top:0.4rem;}
+    /* Status */
+    .gw2-status{font-family:'Share Tech Mono',monospace;font-size:0.75rem;padding:2rem;text-align:center;color:var(--muted);border:1px solid var(--border);}
+    .gw2-status.loading{color:var(--accent);}
+    .gw2-status.error{color:var(--accent2);}
 
     /* OW */
     #overwatch{background:var(--bg);border-top:1px solid var(--border);}
@@ -105,26 +125,18 @@
 <section id="gw2">
   <div class="sec-eye reveal">Guild Wars 2</div>
   <h2 class="sec-title reveal">Guild Wars 2</h2>
-  <div class="gw2-hero reveal">
-    <div class="info-box">
-      <div class="info-box-head">// Account Info</div>
-      <div class="info-row"><span class="ir-key">Account</span><span class="ir-val a">Sepytox</span></div>
-      <div class="info-row"><span class="ir-key">Plattform</span><span class="ir-val">PC</span></div>
-      <div class="info-row"><span class="ir-key">Fokus</span><span class="ir-val">PvP · Open World</span></div>
-      <div class="info-row"><span class="ir-key">Spielzeit</span><span class="ir-val">∞</span></div>
-      <div class="info-row"><span class="ir-key">GW2 API</span><span class="ir-val" style="color:var(--accent2)">Kommt bald</span></div>
+  <div class="gw2-config reveal">
+    <div class="cfg-group">
+      <div class="cfg-label">GW2 API Key</div>
+      <input class="cfg-input" type="password" id="gw2Key" placeholder="Dein GW2 API Key"/>
     </div>
-    <div>
-      <div class="gw2-coming">
-        <div class="big">⚔️ Live Stats</div>
-        <div class="sm">Guild Wars 2 API Integration<br>kommt in einer zukünftigen Version</div>
-      </div>
-      <div style="margin-top:1rem;" class="gw2-coming">
-        <div class="big">🏆 Achievements</div>
-        <div class="sm">Charaktere · Achievements · Rang<br>werden hier angezeigt sobald API aktiv</div>
-      </div>
-    </div>
+    <button class="btn" onclick="loadGW2()"><span>Laden</span></button>
   </div>
+  <div class="steam-note reveal">
+    API Key erstellen: <a href="https://account.arena.net/applications" target="_blank">account.arena.net/applications</a>
+    &nbsp;·&nbsp; Benötigte Rechte: account · legendaryarmory
+  </div>
+  <div id="gw2Content" style="margin-top:2rem;"></div>
 </section>
 
 <!-- OVERWATCH -->
@@ -249,6 +261,130 @@ function showCorsNote() {
     Wenn du die Seite lokal öffnest, funktioniert der CORS-Proxy eventuell nicht.
     <br>Lösung: Seite auf einem Webserver hosten (z.B. GitHub Pages) — dann klappt es.`;
   document.getElementById('steamContent').appendChild(note);
+}
+
+
+// ══════════════════════════════════════════════
+// GW2 API LOADER
+// ══════════════════════════════════════════════
+
+window.addEventListener('load', () => {
+  const savedGW2Key = localStorage.getItem('gw2Key');
+  if (savedGW2Key) {
+    document.getElementById('gw2Key').value = savedGW2Key;
+    loadGW2();
+  }
+});
+
+// Sekunden → "96 Tage, 14 Std, 35 Min"
+function formatAge(seconds) {
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  return `${d} Tage, ${h} Std, ${m} Min`;
+}
+
+// Copper → "1.970 Gold 50 Silber"
+// 100 copper = 1 silber, 10000 copper = 1 gold
+function formatGold(copper) {
+  const gold   = Math.floor(copper / 10000);
+  const silver = Math.floor((copper % 10000) / 100);
+  return `${gold.toLocaleString('de-CH')} Gold ${silver} Silber`;
+}
+
+async function loadGW2() {
+  const key = document.getElementById('gw2Key').value.trim();
+  if (!key) return gw2Status('Bitte GW2 API Key eingeben.', 'error');
+  localStorage.setItem('gw2Key', key);
+  gw2Status('<span class="spinner"></span> Verbinde mit GW2 API...', 'loading');
+
+  try {
+    // Schritt 1: Account (Spielzeit, Name)
+    const account = await gw2fetch(`https://api.guildwars2.com/v2/account?access_token=${key}`);
+
+    // Schritt 2: Legendary Armory IDs
+    const armory = await gw2fetch(`https://api.guildwars2.com/v2/account/legendaryarmory?access_token=${key}`);
+
+    // Schritt 3: Item-Details (Namen + Icons) — alle IDs auf einmal
+    const ids = armory.map(i => i.id).join(',');
+    const items = await gw2fetch(`https://api.guildwars2.com/v2/items?ids=${ids}`);
+
+    // Schritt 4: TP-Preise — kein Key nötig, öffentlich
+    // Manche Items sind Account Bound → fehlen einfach in der Antwort
+    let prices = [];
+    try { prices = await gw2fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${ids}`); } catch(e) {}
+
+    // Schritt 5: Preise als Map { id → priceObject } für schnellen Zugriff
+    const priceMap = {};
+    prices.forEach(p => priceMap[p.id] = p);
+
+    // Schritt 6: Gesamtwert = Summe aller sells.unit_price (= sofortiger Kaufpreis auf TP)
+    let totalCopper = 0;
+    items.forEach(item => {
+      const price = priceMap[item.id];
+      if (price && price.sells && price.sells.unit_price) {
+        totalCopper += price.sells.unit_price;
+      }
+    });
+
+    renderGW2(account, items, priceMap, totalCopper);
+  } catch(e) {
+    gw2Status(`⚠️ ${e.message || 'Fehler beim Laden der GW2 API.'}`, 'error');
+  }
+}
+
+async function gw2fetch(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`API Fehler ${res.status} — Key korrekt? Rechte gesetzt?`);
+  return res.json();
+}
+
+function renderGW2(account, items, priceMap, totalCopper) {
+  items.sort((a, b) => a.name.localeCompare(b.name));
+
+  const armoryHTML = items.map(item => {
+    const price = priceMap[item.id];
+    const hasPrice = price && price.sells && price.sells.unit_price;
+    const priceStr = hasPrice ? formatGold(price.sells.unit_price) : 'Account Bound';
+    const typeLabel = item.details?.type || item.type || '';
+    return `
+      <div class="armory-item">
+        <img class="armory-icon" src="${item.icon}" alt="${item.name}" onerror="this.style.display='none'"/>
+        <div style="flex:1">
+          <div class="armory-name">${item.name}</div>
+          <div class="armory-type">${item.type} · ${typeLabel}</div>
+        </div>
+        <div class="armory-price ${hasPrice ? '' : 'bound'}">${priceStr}</div>
+      </div>`;
+  }).join('');
+
+  const expansions = account.access.filter(a => a !== 'GuildWars2' && a !== 'PlayForFree').join(' · ');
+
+  document.getElementById('gw2Content').innerHTML = `
+    <div class="gw2-hero">
+      <div>
+        <div class="info-box" style="margin-bottom:1.5rem;">
+          <div class="info-box-head">// Account Info</div>
+          <div class="info-row"><span class="ir-key">Account</span><span class="ir-val a">${account.name}</span></div>
+          <div class="info-row"><span class="ir-key">Spielzeit</span><span class="ir-val">${formatAge(account.age)}</span></div>
+          <div class="info-row"><span class="ir-key">Legendaries</span><span class="ir-val a">${items.length}</span></div>
+          <div class="info-row"><span class="ir-key">Expansions</span><span class="ir-val" style="font-size:0.82rem;">${expansions}</span></div>
+        </div>
+        <div class="gw2-total">
+          <div class="lbl">// Armory TP-Kaufwert</div>
+          <div class="val">${Math.floor(totalCopper / 10000).toLocaleString('de-CH')} Gold</div>
+          <div class="sub">Was es kosten würde alles neu zu kaufen</div>
+        </div>
+      </div>
+      <div>
+        <div class="info-box-head" style="border:1px solid var(--border);padding:1rem 1.5rem;margin-bottom:1px;">// Legendary Armory (${items.length})</div>
+        <div class="armory-list">${armoryHTML}</div>
+      </div>
+    </div>`;
+}
+
+function gw2Status(msg, type) {
+  document.getElementById('gw2Content').innerHTML = `<div class="gw2-status ${type}">${msg}</div>`;
 }
 
 // Scroll reveal
