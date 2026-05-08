@@ -52,13 +52,6 @@
     .armory-icon{width:36px;height:36px;border:1px solid var(--border);flex-shrink:0;object-fit:cover;}
     .armory-name{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;color:#fff;flex:1;}
     .armory-type{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.08em;}
-    .armory-price{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--accent3);letter-spacing:0.05em;text-align:right;white-space:nowrap;}
-    .armory-price.bound{color:var(--muted);}
-    /* Total value box */
-    .gw2-total{border:1px solid var(--border);background:var(--bg);padding:1.5rem;text-align:center;}
-    .gw2-total .lbl{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.5rem;}
-    .gw2-total .val{font-family:'Rajdhani',sans-serif;font-size:2.2rem;font-weight:700;color:var(--accent3);line-height:1;}
-    .gw2-total .sub{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--muted);margin-top:0.4rem;}
     /* Status */
     .gw2-status{font-family:'Share Tech Mono',monospace;font-size:0.75rem;padding:2rem;text-align:center;color:var(--muted);border:1px solid var(--border);}
     .gw2-status.loading{color:var(--accent);}
@@ -125,17 +118,26 @@
 <section id="gw2">
   <div class="sec-eye reveal">Guild Wars 2</div>
   <h2 class="sec-title reveal">Guild Wars 2</h2>
+
+  <!-- API Key + Item-Suche -->
   <div class="gw2-config reveal">
     <div class="cfg-group">
       <div class="cfg-label">GW2 API Key</div>
       <input class="cfg-input" type="password" id="gw2Key" placeholder="Dein GW2 API Key"/>
     </div>
-    <button class="btn" onclick="loadGW2()"><span>Laden</span></button>
+    <div class="cfg-group">
+      <div class="cfg-label">Item ID suchen</div>
+      <input class="cfg-input" type="text" id="itemId" placeholder="z.B. 30684"/>
+    </div>
+    <button class="btn" onclick="getaccount()"><span>Account laden</span></button>
+    <button class="btn" onclick="getid()"><span>Item suchen</span></button>
   </div>
+
   <div class="steam-note reveal">
     API Key erstellen: <a href="https://account.arena.net/applications" target="_blank">account.arena.net/applications</a>
     &nbsp;·&nbsp; Benötigte Rechte: account · legendaryarmory
   </div>
+
   <div id="gw2Content" style="margin-top:2rem;"></div>
 </section>
 
@@ -163,7 +165,6 @@
 // STEAM API LOADER
 // ══════════════════════════════════════════════
 
-// Load saved values
 window.addEventListener('load', () => {
   const savedKey = localStorage.getItem('steamKey');
   const savedId  = localStorage.getItem('steamVanity');
@@ -183,7 +184,6 @@ async function loadSteam() {
   showStatus('<span class="spinner"></span> Verbinde mit Steam...', 'loading');
 
   try {
-    // Resolve vanity URL to 64-bit Steam ID
     const resolveUrl = `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=${key}&vanityurl=${vanity}&format=json`;
     const res1 = await fetchCors(resolveUrl);
     const data1 = await res1.json();
@@ -191,14 +191,12 @@ async function loadSteam() {
     if (data1.response.success !== 1) throw new Error('Steam ID nicht gefunden. Prüf die Vanity URL.');
     const steamId64 = data1.response.steamid;
 
-    // Get recently played games
     const gamesUrl = `https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v1/?key=${key}&steamid=${steamId64}&count=12&format=json`;
     const res2 = await fetchCors(gamesUrl);
     const data2 = await res2.json();
 
     const games = data2.response?.games;
     if (!games || games.length === 0) {
-      // Fallback: get owned games
       const ownedUrl = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${key}&steamid=${steamId64}&include_appinfo=true&include_played_free_games=true&format=json`;
       const res3 = await fetchCors(ownedUrl);
       const data3 = await res3.json();
@@ -209,33 +207,27 @@ async function loadSteam() {
       renderGames(games);
     }
   } catch(e) {
-    showStatus(`⚠️ ${e.message || 'Fehler beim Laden. Steam API erlaubt keine direkten Browser-Anfragen (CORS). Sieh Hinweis unten.'}`, 'error');
+    showStatus(`⚠️ ${e.message || 'Fehler beim Laden.'}`, 'error');
     showCorsNote();
   }
 }
 
 async function fetchCors(url) {
-  // Try direct first, then CORS proxy
   try {
     const r = await fetch(url);
     if (r.ok) return r;
   } catch(e) {}
-  // Fallback: cors proxy
   return fetch('https://corsproxy.io/?' + encodeURIComponent(url));
 }
 
 function renderGames(games) {
   const el = document.getElementById('steamContent');
   if (!games.length) { showStatus('Keine Spiele gefunden.', 'error'); return; }
-
   const html = `
     <div class="games-grid">
       ${games.map(g => {
         const hrs = g.playtime_forever ? Math.round(g.playtime_forever / 60) : 0;
         const lastHrs = g.playtime_2weeks ? Math.round(g.playtime_2weeks / 60) : null;
-        const imgUrl = g.img_logo_url
-          ? `https://media.steampowered.com/steamcommunity/public/images/apps/${g.appid}/${g.img_logo_url}.jpg`
-          : `https://cdn.cloudflare.steamstatic.com/steam/apps/${g.appid}/header.jpg`;
         return `
           <div class="game-card">
             <img class="game-img" src="https://cdn.cloudflare.steamstatic.com/steam/apps/${g.appid}/header.jpg" onerror="this.style.display='none'" alt="${g.name}"/>
@@ -258,129 +250,122 @@ function showCorsNote() {
   note.style.marginTop = '1rem';
   note.innerHTML = `
     <strong style="color:var(--accent2)">CORS Hinweis:</strong> Steam erlaubt keine direkten Browser-Anfragen.
-    Wenn du die Seite lokal öffnest, funktioniert der CORS-Proxy eventuell nicht.
-    <br>Lösung: Seite auf einem Webserver hosten (z.B. GitHub Pages) — dann klappt es.`;
+    Lösung: Seite auf einem Webserver hosten (z.B. GitHub Pages).`;
   document.getElementById('steamContent').appendChild(note);
 }
 
 
 // ══════════════════════════════════════════════
-// GW2 API LOADER
+// GW2 API LOADER  (deine Logik)
 // ══════════════════════════════════════════════
 
+// Auto-load beim Seitenstart (deine Variable: 'gw2key')
 window.addEventListener('load', () => {
-  const savedGW2Key = localStorage.getItem('gw2Key');
-  if (savedGW2Key) {
-    document.getElementById('gw2Key').value = savedGW2Key;
-    loadGW2();
+  const gespeicherterKey = localStorage.getItem('gw2key');
+  if (gespeicherterKey) {
+    document.getElementById('gw2Key').value = gespeicherterKey;
+    getaccount();
   }
 });
 
-// Sekunden → "96 Tage, 14 Std, 35 Min"
-function formatAge(seconds) {
-  const d = Math.floor(seconds / 86400);
-  const h = Math.floor((seconds % 86400) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  return `${d} Tage, ${h} Std, ${m} Min`;
-}
+// Item per ID suchen (deine getid() Funktion)
+async function getid() {
+  const wert = document.getElementById('itemId').value.trim();
+  if (!wert) return gw2Status('Bitte eine Item ID eingeben.', 'error');
 
-// Copper → "1.970 Gold 50 Silber"
-// 100 copper = 1 silber, 10000 copper = 1 gold
-function formatGold(copper) {
-  const gold   = Math.floor(copper / 10000);
-  const silver = Math.floor((copper % 10000) / 100);
-  return `${gold.toLocaleString('de-CH')} Gold ${silver} Silber`;
-}
+  const box = document.getElementById('gw2Content');
+  box.innerHTML = '<div class="gw2-status loading"><span class="spinner"></span> Lade Item...</div>';
 
-async function loadGW2() {
-  const key = document.getElementById('gw2Key').value.trim();
-  if (!key) return gw2Status('Bitte GW2 API Key eingeben.', 'error');
-  localStorage.setItem('gw2Key', key);
-  gw2Status('<span class="spinner"></span> Verbinde mit GW2 API...', 'loading');
+  const antwort = await fetch(`https://api.guildwars2.com/v2/items?ids=${wert}`);
 
-  try {
-    // Schritt 1: Account (Spielzeit, Name)
-    const account = await gw2fetch(`https://api.guildwars2.com/v2/account?access_token=${key}`);
+  console.log('Status: ', antwort.status);
+  console.log('Okay? ', antwort.ok);
 
-    // Schritt 2: Legendary Armory IDs
-    const armory = await gw2fetch(`https://api.guildwars2.com/v2/account/legendaryarmory?access_token=${key}`);
-
-    // Schritt 3: Item-Details (Namen + Icons) — alle IDs auf einmal
-    const ids = armory.map(i => i.id).join(',');
-    const items = await gw2fetch(`https://api.guildwars2.com/v2/items?ids=${ids}`);
-
-    // Schritt 4: TP-Preise — kein Key nötig, öffentlich
-    // Manche Items sind Account Bound → fehlen einfach in der Antwort
-    let prices = [];
-    try { prices = await gw2fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${ids}`); } catch(e) {}
-
-    // Schritt 5: Preise als Map { id → priceObject } für schnellen Zugriff
-    const priceMap = {};
-    prices.forEach(p => priceMap[p.id] = p);
-
-    // Schritt 6: Gesamtwert = Summe aller sells.unit_price (= sofortiger Kaufpreis auf TP)
-    let totalCopper = 0;
-    items.forEach(item => {
-      const price = priceMap[item.id];
-      if (price && price.sells && price.sells.unit_price) {
-        totalCopper += price.sells.unit_price;
-      }
-    });
-
-    renderGW2(account, items, priceMap, totalCopper);
-  } catch(e) {
-    gw2Status(`⚠️ ${e.message || 'Fehler beim Laden der GW2 API.'}`, 'error');
+  if (!antwort.ok) {
+    gw2Status(`⚠️ Fehler! Status: ${antwort.status}`, 'error');
+    return;
   }
-}
 
-async function gw2fetch(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`API Fehler ${res.status} — Key korrekt? Rechte gesetzt?`);
-  return res.json();
-}
+  const daten = await antwort.json();
+  const item = daten[0];
 
-function renderGW2(account, items, priceMap, totalCopper) {
-  items.sort((a, b) => a.name.localeCompare(b.name));
-
-  const armoryHTML = items.map(item => {
-    const price = priceMap[item.id];
-    const hasPrice = price && price.sells && price.sells.unit_price;
-    const priceStr = hasPrice ? formatGold(price.sells.unit_price) : 'Account Bound';
-    const typeLabel = item.details?.type || item.type || '';
-    return `
+  box.innerHTML = `
+    <div class="armory-list">
       <div class="armory-item">
         <img class="armory-icon" src="${item.icon}" alt="${item.name}" onerror="this.style.display='none'"/>
         <div style="flex:1">
           <div class="armory-name">${item.name}</div>
-          <div class="armory-type">${item.type} · ${typeLabel}</div>
+          <div class="armory-type">${item.type} · ${item.rarity}</div>
         </div>
-        <div class="armory-price ${hasPrice ? '' : 'bound'}">${priceStr}</div>
-      </div>`;
-  }).join('');
-
-  const expansions = account.access.filter(a => a !== 'GuildWars2' && a !== 'PlayForFree').join(' · ');
-
-  document.getElementById('gw2Content').innerHTML = `
-    <div class="gw2-hero">
-      <div>
-        <div class="info-box" style="margin-bottom:1.5rem;">
-          <div class="info-box-head">// Account Info</div>
-          <div class="info-row"><span class="ir-key">Account</span><span class="ir-val a">${account.name}</span></div>
-          <div class="info-row"><span class="ir-key">Spielzeit</span><span class="ir-val">${formatAge(account.age)}</span></div>
-          <div class="info-row"><span class="ir-key">Legendaries</span><span class="ir-val a">${items.length}</span></div>
-          <div class="info-row"><span class="ir-key">Expansions</span><span class="ir-val" style="font-size:0.82rem;">${expansions}</span></div>
-        </div>
-        <div class="gw2-total">
-          <div class="lbl">// Armory TP-Kaufwert</div>
-          <div class="val">${Math.floor(totalCopper / 10000).toLocaleString('de-CH')} Gold</div>
-          <div class="sub">Was es kosten würde alles neu zu kaufen</div>
-        </div>
-      </div>
-      <div>
-        <div class="info-box-head" style="border:1px solid var(--border);padding:1rem 1.5rem;margin-bottom:1px;">// Legendary Armory (${items.length})</div>
-        <div class="armory-list">${armoryHTML}</div>
       </div>
     </div>`;
+}
+
+// Account + Legendary Armory laden eigene Logik
+async function getaccount() {
+  try {
+    const wert = document.getElementById('gw2Key').value.trim();
+    if (!wert) return gw2Status('Bitte GW2 API Key eingeben.', 'error');
+
+    const box = document.getElementById('gw2Content');
+    box.innerHTML = '<div class="gw2-status loading"><span class="spinner"></span> Verbinde mit GW2 API...</div>';
+
+    const antwort = await fetch(`https://api.guildwars2.com/v2/account?access_token=${wert}`);
+    const daten = await antwort.json();
+
+    const wert2 = await fetch(`https://api.guildwars2.com/v2/account/legendaryarmory?access_token=${wert}`);
+    const armory = await wert2.json();
+    const ids = armory.map(i => i.id).join(',');
+
+    const wert3 = await fetch(`https://api.guildwars2.com/v2/items?ids=${ids}`);
+    const items = await wert3.json();
+
+    localStorage.setItem('gw2key', wert);
+
+    console.log(items);
+    console.log('Status: ', antwort.status);
+    console.log('Okay? ', antwort.ok);
+
+    const stunden = Math.floor(daten.age / 3600);
+
+    const listeHTML = items.sort((a, b) => a.name.localeCompare(b.name)).map(item => `
+      <div class="armory-item">
+        <img class="armory-icon" src="${item.icon}" alt="${item.name}" onerror="this.style.display='none'"/>
+        <div style="flex:1">
+          <div class="armory-name">${item.name}</div>
+          <div class="armory-type">${item.type} · ${item.details?.type || ''}</div>
+        </div>
+      </div>`).join('');
+
+    box.innerHTML = `
+      <div class="gw2-hero">
+        <div class="info-box">
+          <div class="info-box-head">// Account Info</div>
+          <div class="info-row">
+            <span class="ir-key">Account</span>
+            <span class="ir-val a">${daten.name}</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-key">Spielzeit</span>
+            <span class="ir-val">${stunden}h</span>
+          </div>
+          <div class="info-row">
+            <span class="ir-key">Legendaries</span>
+            <span class="ir-val a">${items.length}</span>
+          </div>
+        </div>
+        <div>
+          <div class="info-box-head" style="border:1px solid var(--border);padding:1rem 1.5rem;margin-bottom:1px;">
+            // Legendary Armory (${items.length})
+          </div>
+          <div class="armory-list">${listeHTML}</div>
+        </div>
+      </div>`;
+
+  } catch(fehler) {
+    console.log('Etwas ist Fehlgeschlagen:', fehler);
+    gw2Status('⚠️ Fehler beim Laden der GW2 API.', 'error');
+  }
 }
 
 function gw2Status(msg, type) {
