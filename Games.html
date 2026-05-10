@@ -254,12 +254,6 @@ function showCorsNote() {
   document.getElementById('steamContent').appendChild(note);
 }
 
-
-// ══════════════════════════════════════════════
-// GW2 API LOADER  (deine Logik)
-// ══════════════════════════════════════════════
-
-// Auto-load beim Seitenstart (deine Variable: 'gw2key')
 window.addEventListener('load', () => {
   const gespeicherterKey = localStorage.getItem('gw2key');
   if (gespeicherterKey) {
@@ -268,7 +262,7 @@ window.addEventListener('load', () => {
   }
 });
 
-// Item per ID suchen (deine getid() Funktion)
+
 async function getid() {
   const wert = document.getElementById('itemId').value.trim();
   if (!wert) return gw2Status('Bitte eine Item ID eingeben.', 'error');
@@ -372,7 +366,7 @@ function gw2Status(msg, type) {
   document.getElementById('gw2Content').innerHTML = `<div class="gw2-status ${type}">${msg}</div>`;
 }
 
-// Scroll reveal
+
 document.querySelectorAll('.reveal').forEach(r=>{new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:0.1}).observe(r);});
 </script>
 </body>
