@@ -5,6 +5,7 @@
   <title>Miro Lacoste</title>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
+  <script src="theme.js"></script>
   <style>
     #home{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:0 5rem;}
     .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.035) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 20%,transparent 100%);}
@@ -15,7 +16,7 @@
     .hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr 240px;gap:4rem;align-items:center;width:100%;max-width:1100px;}
     .h-eye{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1.6rem;opacity:0;animation:fadeUp 0.6s ease forwards 0.2s;}
     .h-eye::before{content:'> ';color:var(--muted);}
-    .h-title{font-family:'Rajdhani',sans-serif;font-size:clamp(4rem,9vw,8rem);font-weight:700;line-height:0.88;text-transform:uppercase;color:#fff;letter-spacing:-0.02em;opacity:0;animation:fadeUp 0.7s ease forwards 0.35s;}
+    .h-title{font-family:'Rajdhani',sans-serif;font-size:clamp(4rem,9vw,8rem);font-weight:700;line-height:0.88;text-transform:uppercase;color:var(--heading);letter-spacing:-0.02em;opacity:0;animation:fadeUp 0.7s ease forwards 0.35s;}
     .h-title .a{color:var(--accent);display:block;}
     .h-desc{margin-top:2rem;font-size:0.95rem;line-height:1.9;color:var(--text);max-width:480px;opacity:0;animation:fadeUp 0.7s ease forwards 0.55s;}
     .h-desc strong{color:var(--accent);font-weight:500;}
@@ -24,7 +25,7 @@
     .chip.on{border-color:var(--accent);color:var(--accent);}
     .h-cta{display:flex;gap:1rem;margin-top:2.5rem;flex-wrap:wrap;opacity:0;animation:fadeUp 0.7s ease forwards 0.85s;}
     .panel-wrap{opacity:0;animation:fadeUp 0.8s ease forwards 1s;}
-    .panel{border:1px solid var(--border);background:rgba(10,14,22,0.7);padding:1.5rem;backdrop-filter:blur(8px);}
+    .panel{border:1px solid var(--border);background:var(--panel-bg);padding:1.5rem;backdrop-filter:blur(8px);}
     .panel-head{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid var(--border);}
     .prow{display:flex;align-items:center;gap:0.7rem;padding:0.55rem 0;border-bottom:1px solid rgba(0,229,255,0.05);font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--text);}
     .prow:last-child{border-bottom:none;}
@@ -39,7 +40,7 @@
     .nav-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform 0.4s;}
     .nav-card:hover{background:var(--bg3);}.nav-card:hover::after{transform:scaleX(1);}
     .nc-icon{font-size:1.8rem;margin-bottom:1rem;display:block;}
-    .nc-title{font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700;text-transform:uppercase;color:#fff;letter-spacing:0.05em;margin-bottom:0.4rem;}
+    .nc-title{font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700;text-transform:uppercase;color:var(--heading);letter-spacing:0.05em;margin-bottom:0.4rem;}
     .nc-sub{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;}
     @media(max-width:900px){#home{padding:0 1.5rem;}.hero-inner{grid-template-columns:1fr;}.panel-wrap{display:none;}.nav-grid{grid-template-columns:1fr 1fr;}}
   </style>
@@ -52,6 +53,7 @@
     <li><a href="games.html">Games</a></li>
     <li><a href="travels.html">Reisen</a></li>
   </ul>
+  <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Theme wechseln">☀</button>
 </nav>
 
 <section id="home">

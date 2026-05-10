@@ -5,6 +5,7 @@
   <title>Über mich — Miro Lacoste</title>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
+  <script src="theme.js"></script>
   <style>
     /* BIO */
     .bio-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:5rem;align-items:start;}
@@ -20,7 +21,7 @@
     /* KAWASAKI */
     #moto{background:var(--bg2);border-top:1px solid var(--border);}
     .moto-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;}
-    .moto-info h3{font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:0.5rem;}
+    .moto-info h3{font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;text-transform:uppercase;color:var(--heading);margin-bottom:0.5rem;}
     .moto-info .sub{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--accent);letter-spacing:0.15em;margin-bottom:2rem;}
     .moto-specs{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:2rem;}
     .spec-row{background:var(--bg);}
@@ -33,7 +34,7 @@
     /* GUITAR */
     #guitar{background:var(--bg);border-top:1px solid var(--border);}
     .guitar-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;}
-    .guitar-info h3{font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:0.5rem;}
+    .guitar-info h3{font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;text-transform:uppercase;color:var(--heading);margin-bottom:0.5rem;}
     .guitar-info .sub{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--accent);letter-spacing:0.15em;margin-bottom:2rem;}
     .guitar-facts{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);}
     .fact-row{background:var(--bg2);}
@@ -58,6 +59,7 @@
     <li><a href="games.html">Games</a></li>
     <li><a href="travels.html">Reisen</a></li>
   </ul>
+  <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Theme wechseln">☀</button>
 </nav>
 
 <div class="page-hero">
@@ -125,7 +127,7 @@
       <div class="timer-card">
         <div class="timer-label">// Startdatum anpassen</div>
         <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
-          <input type="date" id="startDate" style="flex:1;background:var(--bg2);border:1px solid var(--border);color:#fff;font-family:'Share Tech Mono',monospace;font-size:0.8rem;padding:0.6rem;outline:none;" onchange="updateTimer()"/>
+          <input type="date" id="startDate" style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--heading);font-family:'Share Tech Mono',monospace;font-size:0.8rem;padding:0.6rem;outline:none;" onchange="updateTimer()"/>
         </div>
         <div class="km-note" style="margin-top:0.5rem;">Startdatum deiner Z650</div>
       </div>

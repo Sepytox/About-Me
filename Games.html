@@ -5,13 +5,14 @@
   <title>Games — Miro Lacoste</title>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
+  <script src="theme.js"></script>
   <style>
     /* STEAM */
     #steam{background:var(--bg);}
     .steam-config{border:1px solid var(--border);background:var(--bg2);padding:1.5rem;margin-bottom:2rem;display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;}
     .cfg-group{display:flex;flex-direction:column;gap:0.4rem;flex:1;min-width:200px;}
     .cfg-label{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;}
-    .cfg-input{background:var(--bg);border:1px solid var(--border);color:#fff;font-family:'Share Tech Mono',monospace;font-size:0.8rem;padding:0.65rem 1rem;outline:none;transition:border-color 0.2s;}
+    .cfg-input{background:var(--bg);border:1px solid var(--border);color:var(--heading);font-family:'Share Tech Mono',monospace;font-size:0.8rem;padding:0.65rem 1rem;outline:none;transition:border-color 0.2s;}
     .cfg-input:focus{border-color:var(--accent);}
     .steam-note{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.8rem;padding:0.8rem 1rem;border:1px solid var(--border);background:rgba(0,229,255,0.03);}
     .steam-note a{color:var(--accent);}
@@ -21,7 +22,7 @@
     .game-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform 0.4s;}
     .game-card:hover{background:var(--bg3);}.game-card:hover::after{transform:scaleX(1);}
     .game-img{width:100%;height:100px;object-fit:cover;margin-bottom:1rem;border:1px solid var(--border);}
-    .game-name{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.4rem;}
+    .game-name{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--heading);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.4rem;}
     .game-hours{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent);letter-spacing:0.1em;}
     .game-last{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.2rem;}
     /* Loading / error */
@@ -38,7 +39,7 @@
     .info-row{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid rgba(0,229,255,0.06);}
     .info-row:last-child{border-bottom:none;}
     .ir-key{font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;}
-    .ir-val{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:600;color:#fff;}
+    .ir-val{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:600;color:var(--heading);}
     .ir-val.a{color:var(--accent);}
     .gw2-coming{border:1px solid var(--border);background:rgba(0,229,255,0.03);padding:2rem;text-align:center;}
     .gw2-coming .big{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:0.5rem;}
@@ -50,7 +51,7 @@
     .armory-item{display:flex;align-items:center;gap:1rem;background:var(--bg);padding:0.8rem 1.2rem;transition:background 0.2s;}
     .armory-item:hover{background:var(--bg3);}
     .armory-icon{width:36px;height:36px;border:1px solid var(--border);flex-shrink:0;object-fit:cover;}
-    .armory-name{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;color:#fff;flex:1;}
+    .armory-name{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;color:var(--heading);flex:1;}
     .armory-type{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.08em;}
     /* Status */
     .gw2-status{font-family:'Share Tech Mono',monospace;font-size:0.75rem;padding:2rem;text-align:center;color:var(--muted);border:1px solid var(--border);}
@@ -61,7 +62,7 @@
     #overwatch{background:var(--bg);border-top:1px solid var(--border);}
     .ow-card{border:1px solid var(--border);background:var(--bg2);padding:2.5rem;display:flex;align-items:center;gap:2rem;}
     .ow-icon{font-size:3rem;flex-shrink:0;}
-    .ow-info h3{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:0.3rem;}
+    .ow-info h3{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;text-transform:uppercase;color:var(--heading);margin-bottom:0.3rem;}
     .ow-info p{font-size:0.88rem;color:var(--muted);line-height:1.7;}
     .ow-pill{display:inline-block;margin-top:1rem;font-family:'Share Tech Mono',monospace;font-size:0.62rem;padding:0.3rem 0.8rem;border:1px solid var(--border);color:var(--accent);letter-spacing:0.12em;}
 
@@ -79,6 +80,7 @@
     <li><a href="games.html" class="active">Games</a></li>
     <li><a href="travels.html">Reisen</a></li>
   </ul>
+  <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Theme wechseln">☀</button>
 </nav>
 
 <div class="page-hero">
