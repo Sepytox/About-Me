@@ -60,11 +60,23 @@
 
     /* OW */
     #overwatch{background:var(--bg);border-top:1px solid var(--border);}
-    .ow-card{border:1px solid var(--border);background:var(--bg2);padding:2.5rem;display:flex;align-items:center;gap:2rem;}
-    .ow-icon{font-size:3rem;flex-shrink:0;}
-    .ow-info h3{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;text-transform:uppercase;color:var(--heading);margin-bottom:0.3rem;}
-    .ow-info p{font-size:0.88rem;color:var(--muted);line-height:1.7;}
-    .ow-pill{display:inline-block;margin-top:1rem;font-family:'Share Tech Mono',monospace;font-size:0.62rem;padding:0.3rem 0.8rem;border:1px solid var(--border);color:var(--accent);letter-spacing:0.12em;}
+    .ow-config{border:1px solid var(--border);background:var(--bg2);padding:1.5rem;margin-bottom:2rem;display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;}
+    .ow-note{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.8rem;padding:0.8rem 1rem;border:1px solid var(--border);background:rgba(0,229,255,0.03);}
+    .ow-note a{color:var(--accent);}
+    .ow-profile{display:grid;grid-template-columns:auto 1fr;gap:2rem;align-items:start;border:1px solid var(--border);background:var(--bg2);padding:2rem;margin-bottom:2rem;}
+    .ow-avatar{width:96px;height:96px;border:2px solid var(--border);object-fit:cover;}
+    .ow-username{font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;text-transform:uppercase;color:var(--heading);margin-bottom:0.3rem;}
+    .ow-endorsement{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;}
+    .ow-ranks{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:2rem;}
+    .ow-rank-card{background:var(--bg2);padding:1.5rem;text-align:center;}
+    .ow-rank-role{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.8rem;}
+    .ow-rank-img{width:64px;height:64px;object-fit:contain;margin-bottom:0.5rem;}
+    .ow-rank-div{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--heading);text-transform:capitalize;}
+    .ow-rank-tier{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--accent);}
+    .ow-status{font-family:'Share Tech Mono',monospace;font-size:0.78rem;letter-spacing:0.1em;padding:3rem;text-align:center;color:var(--muted);border:1px solid var(--border);}
+    .ow-status.loading{color:var(--accent);}
+    .ow-status.error{color:var(--accent2);}
+    @media(max-width:600px){.ow-profile{grid-template-columns:1fr;}}
 
     @media(max-width:900px){
       .steam-config{flex-direction:column;}
@@ -145,16 +157,22 @@
 
 <!-- OVERWATCH -->
 <section id="overwatch">
-  <div class="sec-eye reveal">Overwatch</div>
-  <h2 class="sec-title reveal">Overwatch</h2>
-  <div class="ow-card reveal">
-    <div class="ow-icon">🎯</div>
-    <div class="ow-info">
-      <h3>Overwatch 2</h3>
-      <p>Team-Shooter von Blizzard. Ich spiele regelmässig kompetitiv und arbeite daran, meinen Rang zu verbessern. Jedes Match ist ein Lernmoment — ob Erfolg oder Niederlage.</p>
-      <span class="ow-pill">Stats via Blizzard API — kommt bald</span>
+  <div class="sec-eye reveal">Overwatch 2</div>
+  <h2 class="sec-title reveal">Overwatch 2</h2>
+
+  <div class="ow-config reveal">
+    <div class="cfg-group">
+      <div class="cfg-label">BattleTag</div>
+      <input class="cfg-input" type="text" id="owTag" placeholder="z.B. Username-1234"/>
     </div>
+    <button class="btn" onclick="loadOW()"><span>Laden</span></button>
   </div>
+  <div class="ow-note reveal">
+    Profil muss in den Overwatch-Einstellungen auf <strong style="color:var(--accent)">öffentlich</strong> gestellt sein.<br>
+    Einstellungen → Soziales → Karriereprofil → Öffentlich
+  </div>
+
+  <div id="owContent"></div>
 </section>
 
 <footer>
@@ -366,6 +384,84 @@ async function getaccount() {
 
 function gw2Status(msg, type) {
   document.getElementById('gw2Content').innerHTML = `<div class="gw2-status ${type}">${msg}</div>`;
+}
+
+// ══════════════════════════════════════════════
+// OVERWATCH 2 — OverFast API
+// ══════════════════════════════════════════════
+
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('owTag');
+  if (saved) { document.getElementById('owTag').value = saved; loadOW(); }
+});
+
+async function loadOW() {
+  const tag = document.getElementById('owTag').value.trim();
+  if (!tag) return owStatus('Bitte BattleTag eingeben (z.B. Username-1234).', 'error');
+
+  localStorage.setItem('owTag', tag);
+  owStatus('<span class="spinner"></span> Lade Overwatch 2 Profil...', 'loading');
+
+  const playerId = tag.replace('#', '-');
+
+  try {
+    const res = await fetch(`https://overfast-api.tekrop.fr/players/${encodeURIComponent(playerId)}/summary`);
+    if (res.status === 404) throw new Error('Spieler nicht gefunden. BattleTag prüfen oder Profil auf öffentlich stellen.');
+    if (!res.ok) throw new Error(`API Fehler: ${res.status}`);
+
+    const d = await res.json();
+    renderOW(d);
+  } catch(e) {
+    owStatus(`⚠️ ${e.message || 'Fehler beim Laden.'}`, 'error');
+  }
+}
+
+function renderOW(d) {
+  const box = document.getElementById('owContent');
+
+  const profileHtml = `
+    <div class="ow-profile">
+      ${d.avatar ? `<img class="ow-avatar" src="${d.avatar}" alt="${d.username}" onerror="this.style.display='none'"/>` : '<div style="width:96px;height:96px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🎯</div>'}
+      <div>
+        <div class="ow-username">${d.username}</div>
+        ${d.title ? `<div class="ow-endorsement" style="color:var(--accent);margin-bottom:0.3rem;">${d.title}</div>` : ''}
+        ${d.endorsement ? `<div class="ow-endorsement">Endorsement Level ${d.endorsement.level}</div>` : ''}
+      </div>
+    </div>`;
+
+  const pc = d.competitive?.pc;
+  let ranksHtml = '';
+  if (pc?.role_queue) {
+    const roles = { tank: 'Tank', damage: 'Schaden', support: 'Support' };
+    const cards = Object.entries(roles).map(([key, label]) => {
+      const r = pc.role_queue[key];
+      if (!r) return '';
+      return `
+        <div class="ow-rank-card">
+          <div class="ow-rank-role">${label}</div>
+          ${r.rank_icon ? `<img class="ow-rank-img" src="${r.rank_icon}" alt="${r.division}" onerror="this.style.display='none'"/>` : ''}
+          <div class="ow-rank-div">${r.division}</div>
+          <div class="ow-rank-tier">Tier ${r.tier}</div>
+        </div>`;
+    }).join('');
+    if (cards.trim()) {
+      ranksHtml = `
+        <div class="info-box-head" style="border:1px solid var(--border);padding:1rem 1.5rem;margin-bottom:1px;">
+          // Kompetitiv — Season ${pc.season}
+        </div>
+        <div class="ow-ranks">${cards}</div>`;
+    }
+  }
+
+  if (!ranksHtml) {
+    ranksHtml = `<div class="ow-status">Keine kompetitiven Daten für diese Season vorhanden.</div>`;
+  }
+
+  box.innerHTML = profileHtml + ranksHtml;
+}
+
+function owStatus(msg, type) {
+  document.getElementById('owContent').innerHTML = `<div class="ow-status ${type}">${msg}</div>`;
 }
 
 
