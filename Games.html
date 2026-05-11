@@ -76,7 +76,18 @@
     .ow-status{font-family:'Share Tech Mono',monospace;font-size:0.78rem;letter-spacing:0.1em;padding:3rem;text-align:center;color:var(--muted);border:1px solid var(--border);}
     .ow-status.loading{color:var(--accent);}
     .ow-status.error{color:var(--accent2);}
-    @media(max-width:600px){.ow-profile{grid-template-columns:1fr;}}
+    /* Peak Rank */
+    .ow-peak{border:1px solid rgba(249,158,26,0.35);background:var(--bg2);padding:2rem 2.5rem;display:flex;align-items:center;gap:2.5rem;margin-bottom:2rem;position:relative;overflow:hidden;}
+    .ow-peak::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#f99e1a,#ffd700,#f99e1a);}
+    .ow-peak::after{content:'OVERWATCH 1';position:absolute;top:1rem;right:1.5rem;font-family:'Share Tech Mono',monospace;font-size:0.55rem;letter-spacing:0.2em;color:rgba(249,158,26,0.4);}
+    .ow-peak-badge{flex-shrink:0;width:110px;height:110px;display:flex;align-items:center;justify-content:center;}
+    .ow-peak-badge svg{filter:drop-shadow(0 0 12px rgba(249,158,26,0.4));}
+    .ow-peak-label{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:rgba(249,158,26,0.7);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.5rem;}
+    .ow-peak-tier{font-family:'Rajdhani',sans-serif;font-size:2.2rem;font-weight:700;text-transform:uppercase;line-height:1;background:linear-gradient(135deg,#f99e1a,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .ow-peak-pos{font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--heading);letter-spacing:0.05em;margin-top:0.4rem;}
+    .ow-peak-pos span{color:#ffd700;font-size:1.3rem;font-weight:700;}
+    .ow-peak-sub{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;margin-top:0.5rem;}
+    @media(max-width:600px){.ow-profile{grid-template-columns:1fr;}.ow-peak{flex-direction:column;text-align:center;}}
 
     @media(max-width:900px){
       .steam-config{flex-direction:column;}
@@ -159,6 +170,25 @@
 <section id="overwatch">
   <div class="sec-eye reveal">Overwatch 2</div>
   <h2 class="sec-title reveal">Overwatch 2</h2>
+
+  <!-- Peak Rank -->
+  <div class="ow-peak reveal">
+    <div class="ow-peak-badge">
+      <svg viewBox="0 0 100 100" width="110" height="110" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,4 96,28 96,72 50,96 4,72 4,28" fill="rgba(249,158,26,0.1)" stroke="#f99e1a" stroke-width="1.5"/>
+        <polygon points="50,14 86,33 86,67 50,86 14,67 14,33" fill="none" stroke="rgba(249,158,26,0.3)" stroke-width="0.8"/>
+        <text x="50" y="42" text-anchor="middle" fill="#f99e1a" font-size="9" font-family="'Share Tech Mono',monospace" letter-spacing="2">TOP</text>
+        <text x="50" y="64" text-anchor="middle" fill="#ffd700" font-size="26" font-family="'Rajdhani',sans-serif" font-weight="700">500</text>
+        <text x="50" y="78" text-anchor="middle" fill="rgba(249,158,26,0.6)" font-size="7" font-family="'Share Tech Mono',monospace" letter-spacing="1">#164</text>
+      </svg>
+    </div>
+    <div>
+      <div class="ow-peak-label">// All-Time Peak — PC · Damage</div>
+      <div class="ow-peak-tier">Top 500</div>
+      <div class="ow-peak-pos">Platz <span>#164</span> Worldwide</div>
+      <div class="ow-peak-sub">Overwatch 1 · Kompetitiv</div>
+    </div>
+  </div>
 
   <div class="ow-config reveal">
     <div class="cfg-group">
