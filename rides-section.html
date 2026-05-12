@@ -1,0 +1,572 @@
+<style>
+#rides{background:var(--bg);border-top:1px solid var(--border);}
+.rides-wrap{display:grid;grid-template-columns:260px 1fr;border:1px solid var(--border);margin-top:0;}
+/* ── Left panel ── */
+.rl-panel{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;max-height:820px;}
+.rl-head{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--accent);letter-spacing:0.2em;text-transform:uppercase;padding:0.9rem 1.2rem;border-bottom:1px solid var(--border);}
+.rl-scroll{flex:1;overflow-y:auto;}
+.rl-scroll::-webkit-scrollbar{width:3px;}
+.rl-scroll::-webkit-scrollbar-thumb{background:var(--border);}
+.rl-empty-msg{padding:2rem 1.2rem;font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--muted);text-align:center;line-height:1.8;}
+.tour-item{padding:0.85rem 1.2rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.2s;position:relative;padding-right:2.2rem;}
+.tour-item:hover{background:var(--bg3);}
+.tour-item.ri-active{background:rgba(0,229,255,0.04);border-left:2px solid var(--accent);padding-left:calc(1.2rem - 2px);}
+.tour-date{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--heading);letter-spacing:0.04em;}
+.tour-meta{font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--muted);margin-top:0.2rem;}
+.tour-del{position:absolute;top:50%;right:0.6rem;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.7rem;padding:0.25rem;line-height:1;transition:color 0.2s;}
+.tour-del:hover{color:var(--accent2);}
+.rl-dropwrap{padding:0.8rem;}
+.ri-drop{border:1px dashed rgba(0,229,255,0.18);background:rgba(0,229,255,0.02);padding:1.4rem 0.8rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;position:relative;}
+.ri-drop:hover,.ri-drop.over{border-color:var(--accent);background:rgba(0,229,255,0.06);}
+.ri-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.ri-drop-ico{font-size:1.4rem;margin-bottom:0.4rem;}
+.ri-drop-txt{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--muted);line-height:1.6;}
+/* ── Right main ── */
+.ri-main{display:flex;flex-direction:column;}
+.ri-placeholder{flex:1;display:flex;align-items:center;justify-content:center;min-height:440px;}
+.ri-ph-txt{font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.15em;text-align:center;}
+/* Stats bar */
+.ri-statsbar{display:grid;grid-template-columns:repeat(8,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.ri-sb{background:var(--bg2);padding:0.75rem 0.4rem;text-align:center;}
+.ri-sb-v{font-family:'Rajdhani',sans-serif;font-size:1.15rem;font-weight:700;color:var(--accent);line-height:1;}
+.ri-sb-l{font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:0.2rem;}
+/* Map */
+#riMap{height:400px;width:100%;}
+/* Player */
+.ri-player{background:var(--bg2);border-top:1px solid var(--border);padding:0.9rem 1.2rem;display:flex;flex-direction:column;gap:0.65rem;}
+.ri-live{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);}
+.rilv{background:var(--bg);padding:0.55rem 0.4rem;text-align:center;}
+.rilv-v{font-family:'Rajdhani',sans-serif;font-size:1.05rem;font-weight:700;color:var(--heading);line-height:1;}
+.rilv-l{font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--muted);letter-spacing:0.1em;margin-top:0.15rem;}
+.ri-ctrl{display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;}
+.ri-playbtn{font-family:'Share Tech Mono',monospace;font-size:0.65rem;padding:0.4rem 0.9rem;background:none;border:1px solid var(--accent);color:var(--accent);cursor:pointer;white-space:nowrap;transition:background 0.2s;flex-shrink:0;}
+.ri-playbtn:hover{background:rgba(0,229,255,0.1);}
+#riProgress{flex:1;min-width:80px;accent-color:var(--accent);cursor:pointer;}
+.ri-spds{display:flex;gap:0.2rem;}
+.ri-spd{font-family:'Share Tech Mono',monospace;font-size:0.58rem;padding:0.22rem 0.42rem;background:none;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.ri-spd.on,.ri-spd:hover{border-color:var(--accent);color:var(--accent);}
+/* Charts */
+.ri-charts{background:var(--bg);border-top:1px solid var(--border);padding:1rem 1.2rem;}
+.ri-togs{display:flex;gap:0.35rem;flex-wrap:wrap;margin-bottom:0.8rem;}
+.ri-tog{font-family:'Share Tech Mono',monospace;font-size:0.58rem;padding:0.22rem 0.65rem;border:1px solid var(--border);color:var(--muted);background:none;cursor:pointer;transition:all 0.2s;}
+.ri-tog.on[data-c="speed"]{border-color:#00e5ff;color:#00e5ff;}
+.ri-tog.on[data-c="rpm"]{border-color:#ff3c6e;color:#ff3c6e;}
+.ri-tog.on[data-c="temp"]{border-color:#ff8c00;color:#ff8c00;}
+.ri-tog.on[data-c="gear"]{border-color:#7fff6e;color:#7fff6e;}
+.ri-cw{margin-bottom:0.7rem;}
+.ri-cw canvas{display:block;width:100%!important;background:#06080d;}
+.moto-pin{font-size:16px;line-height:1;filter:drop-shadow(0 0 5px rgba(0,229,255,0.9));display:block;transform-origin:center;}
+@media(max-width:900px){
+  .rides-wrap{grid-template-columns:1fr;}
+  .rl-panel{max-height:240px;border-right:none;border-bottom:1px solid var(--border);}
+  .ri-statsbar{grid-template-columns:repeat(4,1fr);}
+}
+</style>
+
+<section id="rides">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<div class="sec-eye reveal">Motorrad</div>
+<h2 class="sec-title reveal">Touren</h2>
+
+<div class="rides-wrap reveal">
+
+  <!-- LEFT: Tour list -->
+  <div class="rl-panel">
+    <div class="rl-head">// Gespeicherte Touren</div>
+    <div class="rl-scroll" id="riTourList">
+      <div class="rl-empty-msg">Noch keine Touren.<br>CSV hochladen um zu starten.</div>
+    </div>
+    <div class="rl-dropwrap">
+      <div class="ri-drop" id="riDrop">
+        <input type="file" id="riFileIn" accept=".csv" multiple/>
+        <div class="ri-drop-ico">🏍️</div>
+        <div class="ri-drop-txt">CSV ablegen oder klicken<br><span style="color:rgba(0,229,255,0.28);font-size:0.52rem;">Rideology Export · .csv</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Main -->
+  <div class="ri-main">
+
+    <div id="riEmpty" class="ri-placeholder">
+      <div class="ri-ph-txt">← Tour wählen oder CSV hochladen</div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="ri-statsbar" id="riStats" style="display:none;">
+      <div class="ri-sb"><div class="ri-sb-v" id="rs-date">—</div><div class="ri-sb-l">Datum</div></div>
+      <div class="ri-sb"><div class="ri-sb-v" id="rs-km">—</div><div class="ri-sb-l">km</div></div>
+      <div class="ri-sb"><div class="ri-sb-v" id="rs-time">—</div><div class="ri-sb-l">Fahrzeit</div></div>
+      <div class="ri-sb"><div class="ri-sb-v" id="rs-mxsp">—</div><div class="ri-sb-l">Max km/h</div></div>
+      <div class="ri-sb"><div class="ri-sb-v" id="rs-avsp">—</div><div class="ri-sb-l">Ø km/h</div></div>
+      <div class="ri-sb"><div class="ri-sb-v" id="rs-lean">—</div><div class="ri-sb-l">Max Lean</div></div>
+      <div class="ri-sb"><div class="ri-sb-v" id="rs-temp">—</div><div class="ri-sb-l">Max °C</div></div>
+      <div class="ri-sb"><div class="ri-sb-v" id="rs-score">—</div><div class="ri-sb-l">Score</div></div>
+    </div>
+
+    <!-- Map -->
+    <div id="riMap" style="display:none;"></div>
+
+    <!-- Replay player -->
+    <div class="ri-player" id="riPlayer" style="display:none;">
+      <div class="ri-live">
+        <div class="rilv"><div class="rilv-v" id="lv-sp">—</div><div class="rilv-l">km/h</div></div>
+        <div class="rilv"><div class="rilv-v" id="lv-gr">—</div><div class="rilv-l">Gang</div></div>
+        <div class="rilv"><div class="rilv-v" id="lv-rp">—</div><div class="rilv-l">RPM</div></div>
+        <div class="rilv"><div class="rilv-v" id="lv-tp">—</div><div class="rilv-l">°C</div></div>
+        <div class="rilv"><div class="rilv-v" id="lv-ln">—</div><div class="rilv-l">Lean °</div></div>
+      </div>
+      <div class="ri-ctrl">
+        <button class="ri-playbtn" id="riPlayBtn" onclick="riTogPlay()">▶ PLAY</button>
+        <input type="range" id="riProgress" min="0" max="1000" value="0" oninput="riSeek(this.value)"/>
+        <div class="ri-spds">
+          <button class="ri-spd on" onclick="riSetSpd(1,this)">1×</button>
+          <button class="ri-spd" onclick="riSetSpd(5,this)">5×</button>
+          <button class="ri-spd" onclick="riSetSpd(10,this)">10×</button>
+          <button class="ri-spd" onclick="riSetSpd(50,this)">50×</button>
+          <button class="ri-spd" onclick="riSetSpd(100,this)">100×</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="ri-charts" id="riCharts" style="display:none;">
+      <div class="ri-togs">
+        <button class="ri-tog on" data-c="speed" onclick="riTogChart('speed',this)">Geschwindigkeit</button>
+        <button class="ri-tog on" data-c="rpm"   onclick="riTogChart('rpm',this)">RPM</button>
+        <button class="ri-tog on" data-c="temp"  onclick="riTogChart('temp',this)">Temperatur</button>
+        <button class="ri-tog on" data-c="gear"  onclick="riTogChart('gear',this)">Gang</button>
+      </div>
+      <div class="ri-cw" id="cw-speed" style="height:140px;"><canvas id="rc-speed"></canvas></div>
+      <div class="ri-cw" id="cw-rpm"   style="height:120px;"><canvas id="rc-rpm"></canvas></div>
+      <div class="ri-cw" id="cw-temp"  style="height:100px;"><canvas id="rc-temp"></canvas></div>
+      <div class="ri-cw" id="cw-gear"  style="height:85px;"><canvas id="rc-gear"></canvas></div>
+    </div>
+
+  </div><!-- /ri-main -->
+</div><!-- /rides-wrap -->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+(function () {
+'use strict';
+
+// ── Constants ───────────────────────────────────────────────────────────────
+var SK = 'ridesV3';
+var CDEFS = [
+  { id:'speed', key:'sp', color:'#00e5ff', label:'Geschwindigkeit (km/h)', stepped:false },
+  { id:'rpm',   key:'rp', color:'#ff3c6e', label:'Motor-RPM',              stepped:false },
+  { id:'temp',  key:'tp', color:'#ff8c00', label:'Motortemperatur (°C)',   stepped:false },
+  { id:'gear',  key:'gr', color:'#7fff6e', label:'Gang',                   stepped:'after', yMax:7 }
+];
+
+// ── State ────────────────────────────────────────────────────────────────────
+var tours = [], cur = null;
+var rMap = null, rRoute = null, rStartM = null, rEndM = null, rMotoM = null;
+var rCharts = {};
+var rPlaying = false, rSpeed = 1, rIdx = 0, rT = 0, rLastTs = null, rRaf = null;
+var rLineT = 0;
+
+// ── Expose to global (for inline onclick) ───────────────────────────────────
+window.riLoad     = riLoad;
+window.riDel      = riDel;
+window.riTogPlay  = riTogPlay;
+window.riSeek     = riSeek;
+window.riSetSpd   = riSetSpd;
+window.riTogChart = riTogChart;
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+try { tours = JSON.parse(localStorage.getItem(SK) || '[]'); } catch(e) { tours = []; }
+renderList();
+setupDrop();
+
+// ── Drop zone ────────────────────────────────────────────────────────────────
+function setupDrop() {
+  var drop = document.getElementById('riDrop');
+  var inp  = document.getElementById('riFileIn');
+  inp.addEventListener('change', function() { handleFiles(inp.files); inp.value=''; });
+  drop.addEventListener('dragover',  function(e){ e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', function()  { drop.classList.remove('over'); });
+  drop.addEventListener('drop', function(e) {
+    e.preventDefault(); drop.classList.remove('over');
+    handleFiles(e.dataTransfer.files);
+  });
+}
+
+function handleFiles(files) {
+  Array.from(files).forEach(function(f) {
+    if (!f.name.toLowerCase().endsWith('.csv')) return;
+    var fr = new FileReader();
+    fr.onload = function(e) {
+      var t = parseCSV(e.target.result);
+      if (!t || tours.some(function(x){ return x.id === t.id; })) return;
+      tours.push(t);
+      saveTours();
+      renderList();
+    };
+    fr.readAsText(f);
+  });
+}
+
+// ── CSV Parser ────────────────────────────────────────────────────────────────
+function parseCSV(txt) {
+  var lines = txt.split('\n').map(function(l){ return l.trim(); });
+
+  function meta(key) {
+    var k = key.toLowerCase();
+    var l = null;
+    for (var i = 0; i < Math.min(lines.length, 12); i++) {
+      if (lines[i].toLowerCase().startsWith('"' + k + '"')) { l = lines[i]; break; }
+    }
+    if (!l) return '';
+    var m = l.match(/^"[^"]*",("?)([^"]*)"?$/);
+    return m ? m[2].trim() : '';
+  }
+
+  var title = meta('Title') || 'Tour';
+  var dist  = parseFloat(meta('Distance')) || 0;
+  var mins  = parseInt(meta('Time'))       || 0;
+  var score = parseInt(meta('R.Score'))    || 0;
+
+  var dm = title.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{2}:\d{2})/);
+  var dateStr = dm ? dm[3]+'-'+dm[2].padStart(2,'0')+'-'+dm[1].padStart(2,'0') : title.slice(0,20);
+  var timeStr = dm ? dm[4] : '';
+
+  var hIdx = -1;
+  for (var i = 0; i < lines.length; i++) {
+    if (lines[i].includes('elapsed_msec')) { hIdx = i; break; }
+  }
+  if (hIdx < 0) return null;
+
+  var hdrs = lines[hIdx].split(',').map(function(h){ return h.replace(/"/g,'').trim(); });
+  function ci(n){ return hdrs.indexOf(n); }
+  var iT=ci('elapsed_msec'), iLa=ci('gps_latitude'), iLo=ci('gps_longitude'),
+      iSp=ci('wheel_speed'), iRp=ci('engine_RPM'),   iTp=ci('water_temperature'),
+      iGr=ci('gear_position'), iLn=ci('lean_angle');
+
+  var pts = [];
+  var data = lines.slice(hIdx + 1);
+  for (var i = 0; i < data.length; i++) {
+    if (i % 5 !== 0) continue;
+    var c = data[i].split(',');
+    if (c.length < 5) continue;
+    var la = parseFloat(c[iLa]), lo = parseFloat(c[iLo]);
+    if (!la || !lo || isNaN(la) || isNaN(lo)) continue;
+    pts.push({
+      t:  parseInt(c[iT])    || 0,
+      la: la, lo: lo,
+      sp: parseFloat(c[iSp]) || 0,
+      rp: parseFloat(c[iRp]) || 0,
+      tp: parseFloat(c[iTp]) || 0,
+      gr: parseInt(c[iGr])   || 0,
+      ln: Math.abs(parseFloat(c[iLn]) || 0)
+    });
+  }
+  if (!pts.length) return null;
+
+  var spds  = pts.map(function(p){ return p.sp; });
+  var temps = pts.map(function(p){ return p.tp; });
+  var leans = pts.map(function(p){ return p.ln; });
+  var movSp = pts.filter(function(p){ return p.sp > 5; }).map(function(p){ return p.sp; });
+
+  return {
+    id:      dateStr + timeStr.replace(':','') + String(dist),
+    title:   title,
+    dateStr: dateStr,
+    timeStr: timeStr,
+    dist:    dist,
+    mins:    mins,
+    score:   score,
+    mxSp:   Math.max(0, Math.max.apply(null, spds)).toFixed(0),
+    avSp:   movSp.length ? (movSp.reduce(function(a,b){return a+b;},0)/movSp.length).toFixed(0) : '0',
+    mxLn:   Math.max(0, Math.max.apply(null, leans)).toFixed(1),
+    mxTp:   Math.max(0, Math.max.apply(null, temps)).toFixed(0),
+    pts:    pts
+  };
+}
+
+// ── Storage ───────────────────────────────────────────────────────────────────
+function saveTours() {
+  try { localStorage.setItem(SK, JSON.stringify(tours)); }
+  catch(e) { alert('localStorage voll — bitte alte Touren löschen.'); }
+}
+
+// ── Tour list ─────────────────────────────────────────────────────────────────
+function renderList() {
+  var el = document.getElementById('riTourList');
+  if (!tours.length) {
+    el.innerHTML = '<div class="rl-empty-msg">Noch keine Touren.<br>CSV hochladen um zu starten.</div>';
+    return;
+  }
+  el.innerHTML = tours.slice().reverse().map(function(t) {
+    var active = cur && cur.id === t.id ? ' ri-active' : '';
+    return '<div class="tour-item'+active+'" onclick="riLoad(\''+t.id+'\')">'+
+      '<button class="tour-del" onclick="riDel(\''+t.id+'\',event)" title="Löschen">✕</button>'+
+      '<div class="tour-date">'+t.dateStr+' '+t.timeStr+'</div>'+
+      '<div class="tour-meta">'+t.dist+'km · '+fmtMin(t.mins)+' · ★'+t.score+'</div>'+
+      '</div>';
+  }).join('');
+}
+
+function fmtMin(m) {
+  var h = Math.floor(m / 60), r = m % 60;
+  return h > 0 ? h+'h '+r+'min' : r+'min';
+}
+
+function riLoad(id) {
+  var t = tours.find(function(x){ return x.id === id; });
+  if (!t) return;
+  cur = t; rStop(); renderList(); showTour(t);
+}
+
+function riDel(id, ev) {
+  ev.stopPropagation();
+  tours = tours.filter(function(t){ return t.id !== id; });
+  saveTours(); renderList();
+  if (cur && cur.id === id) clearView();
+}
+
+// ── View control ─────────────────────────────────────────────────────────────
+function clearView() {
+  cur = null; rStop(); renderList();
+  document.getElementById('riEmpty').style.display = '';
+  ['riStats','riMap','riPlayer','riCharts'].forEach(function(id){
+    document.getElementById(id).style.display = 'none';
+  });
+}
+
+function showTour(t) {
+  document.getElementById('riEmpty').style.display = 'none';
+
+  var sb = document.getElementById('riStats'); sb.style.display = '';
+  document.getElementById('rs-date').textContent  = t.dateStr;
+  document.getElementById('rs-km').textContent    = t.dist;
+  document.getElementById('rs-time').textContent  = fmtMin(t.mins);
+  document.getElementById('rs-mxsp').textContent  = t.mxSp;
+  document.getElementById('rs-avsp').textContent  = t.avSp;
+  document.getElementById('rs-lean').textContent  = t.mxLn+'°';
+  document.getElementById('rs-temp').textContent  = t.mxTp;
+  document.getElementById('rs-score').textContent = t.score;
+
+  document.getElementById('riMap').style.display    = '';
+  document.getElementById('riPlayer').style.display = '';
+  document.getElementById('riCharts').style.display = '';
+
+  rIdx = 0; rT = 0; rLineT = 0;
+  document.getElementById('riProgress').value = 0;
+  setLive(t.pts[0]);
+  initMap(t);
+  buildCharts(t);
+}
+
+// ── Map ───────────────────────────────────────────────────────────────────────
+function initMap(t) {
+  var mapEl = document.getElementById('riMap');
+
+  if (!rMap) {
+    rMap = L.map(mapEl, { zoomControl: true, attributionControl: false });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(rMap);
+  } else {
+    [rRoute, rStartM, rEndM, rMotoM].forEach(function(l){ if (l) rMap.removeLayer(l); });
+  }
+
+  var ll = t.pts.map(function(p){ return [p.la, p.lo]; });
+  rRoute = L.polyline(ll, { color: '#00e5ff', weight: 2.5, opacity: 0.85 }).addTo(rMap);
+
+  function dot(col) {
+    return L.divIcon({
+      className: '',
+      html: '<div style="width:10px;height:10px;border-radius:50%;background:'+col+';border:2px solid rgba(255,255,255,0.8);box-shadow:0 0 8px '+col+';"></div>',
+      iconSize: [10,10], iconAnchor: [5,5]
+    });
+  }
+  rStartM = L.marker(ll[0],            { icon: dot('#7fff6e') }).addTo(rMap);
+  rEndM   = L.marker(ll[ll.length - 1],{ icon: dot('#ff3c6e') }).addTo(rMap);
+  rMotoM  = L.marker(ll[0], {
+    icon: L.divIcon({
+      className: '',
+      html: '<span class="moto-pin" id="riMPin">▲</span>',
+      iconSize: [20,20], iconAnchor: [10,10]
+    })
+  }).addTo(rMap);
+
+  rMap.fitBounds(rRoute.getBounds(), { padding: [30, 30] });
+  setTimeout(function(){ rMap.invalidateSize(); }, 120);
+}
+
+// ── Replay ────────────────────────────────────────────────────────────────────
+function riTogPlay() {
+  if (!cur) return;
+  if (rPlaying) { rStop(); return; }
+  if (rIdx >= cur.pts.length - 1) { rIdx = 0; rT = 0; document.getElementById('riProgress').value = 0; }
+  rPlaying = true; rLastTs = null;
+  document.getElementById('riPlayBtn').textContent = '⏸ PAUSE';
+  rRaf = requestAnimationFrame(rFrame);
+}
+
+function rStop() {
+  rPlaying = false; rLastTs = null;
+  if (rRaf) { cancelAnimationFrame(rRaf); rRaf = null; }
+  var btn = document.getElementById('riPlayBtn');
+  if (btn) btn.textContent = '▶ PLAY';
+}
+
+function rFrame(ts) {
+  if (!rPlaying || !cur) return;
+  if (!rLastTs) rLastTs = ts;
+  rT += (ts - rLastTs) * rSpeed;
+  rLastTs = ts;
+
+  var pts = cur.pts;
+  while (rIdx < pts.length - 1 && pts[rIdx + 1].t <= rT) rIdx++;
+  if (rIdx >= pts.length - 1) { rStop(); return; }
+
+  replayAt(rIdx);
+  document.getElementById('riProgress').value = Math.round(rT / pts[pts.length - 1].t * 1000);
+  rRaf = requestAnimationFrame(rFrame);
+}
+
+function replayAt(i) {
+  var p = cur.pts[i];
+  if (rMotoM) {
+    rMotoM.setLatLng([p.la, p.lo]);
+    if (i < cur.pts.length - 1) {
+      var h = bearing(p, cur.pts[i + 1]);
+      var el = document.getElementById('riMPin');
+      if (el) el.style.transform = 'rotate(' + h + 'deg)';
+    }
+  }
+  setLive(p);
+  rLineT = p.t;
+  Object.values(rCharts).forEach(function(c){ c.update('none'); });
+}
+
+function riSeek(v) {
+  if (!cur) return;
+  var pts = cur.pts;
+  rT = (v / 1000) * pts[pts.length - 1].t;
+  rIdx = 0;
+  for (var i = 0; i < pts.length - 1; i++) {
+    if (pts[i].t <= rT) rIdx = i; else break;
+  }
+  replayAt(rIdx);
+}
+
+function riSetSpd(s, btn) {
+  rSpeed = s;
+  document.querySelectorAll('.ri-spd').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
+function setLive(p) {
+  if (!p) return;
+  document.getElementById('lv-sp').textContent = p.sp.toFixed(0);
+  document.getElementById('lv-gr').textContent = p.gr || 'N';
+  document.getElementById('lv-rp').textContent = p.rp ? Math.round(p.rp).toLocaleString('de-CH') : '—';
+  document.getElementById('lv-tp').textContent = p.tp.toFixed(0);
+  document.getElementById('lv-ln').textContent = p.ln.toFixed(1) + '°';
+}
+
+function bearing(a, b) {
+  return (Math.atan2(b.lo - a.lo, b.la - a.la) * 180 / Math.PI + 360) % 360;
+}
+
+// ── Charts ────────────────────────────────────────────────────────────────────
+var replayLinePlugin = {
+  id: 'riReplayLine',
+  afterDatasetsDraw: function(ch) {
+    if (!cur) return;
+    var ca = ch.chartArea, sc = ch.scales;
+    if (!ca || !sc.x) return;
+    var xPx = sc.x.getPixelForValue(rLineT / 60000);
+    if (xPx < ca.left || xPx > ca.right) return;
+    var ctx = ch.ctx;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(xPx, ca.top); ctx.lineTo(xPx, ca.bottom);
+    ctx.strokeStyle = 'rgba(255,60,110,0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3,3]);
+    ctx.stroke();
+    ctx.restore();
+  }
+};
+Chart.register(replayLinePlugin);
+
+function buildCharts(t) {
+  Object.values(rCharts).forEach(function(c){ c.destroy(); });
+  rCharts = {};
+
+  // every 2nd stored point = every 10th original
+  var pts = t.pts.filter(function(_,i){ return i % 2 === 0; });
+
+  CDEFS.forEach(function(def) {
+    var el = document.getElementById('rc-' + def.id);
+    var data = pts.map(function(p){ return { x: p.t / 60000, y: p[def.key] }; });
+
+    rCharts[def.id] = new Chart(el, {
+      type: 'line',
+      data: {
+        datasets: [{
+          data: data,
+          borderColor: def.color,
+          backgroundColor: def.color + '14',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: true,
+          tension: def.stepped ? 0 : 0.2,
+          stepped: def.stepped || false
+        }]
+      },
+      options: {
+        animation: false,
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index', intersect: false,
+            callbacks: { title: function(v){ return parseFloat(v[0].label).toFixed(1)+' min'; } }
+          }
+        },
+        scales: {
+          x: {
+            type: 'linear',
+            ticks: {
+              color: 'rgba(184,204,220,0.35)',
+              font: { family:"'Share Tech Mono',monospace", size: 9 },
+              callback: function(v){ return v.toFixed(0)+'min'; },
+              maxTicksLimit: 8
+            },
+            grid:   { color: 'rgba(0,229,255,0.04)' },
+            border: { color: 'rgba(0,229,255,0.08)' }
+          },
+          y: {
+            min: 0,
+            max: def.yMax,
+            ticks: {
+              color: 'rgba(184,204,220,0.35)',
+              font: { family:"'Share Tech Mono',monospace", size: 9 },
+              maxTicksLimit: 5
+            },
+            grid:   { color: 'rgba(0,229,255,0.04)' },
+            border: { color: 'rgba(0,229,255,0.08)' }
+          }
+        }
+      }
+    });
+  });
+}
+
+function riTogChart(key, btn) {
+  btn.classList.toggle('on');
+  var w = document.getElementById('cw-' + key);
+  w.style.display = w.style.display === 'none' ? '' : 'none';
+}
+
+})();
+</script>
+
+</section>

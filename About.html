@@ -46,6 +46,26 @@
     .img-upload-txt{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--muted);letter-spacing:0.1em;}
     .img-preview{width:100%;height:300px;object-fit:cover;display:none;border:1px solid var(--border);}
 
+    /* MOTO STATS CARD */
+    .moto-stats-card{border:1px solid rgba(0,229,255,0.12);background:#0a0e16;overflow:hidden;}
+    .tacho-wrap{padding:1.5rem 1.5rem 0.4rem;background:#06080d;border-bottom:1px solid rgba(0,229,255,0.1);}
+    #tachoCanvas{width:100%;max-width:320px;display:block;margin:0 auto;}
+    .tacho-hint{font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:rgba(0,229,255,0.22);letter-spacing:0.2em;text-transform:uppercase;text-align:center;padding:0.45rem 0;}
+    .km-bar-section{padding:1.2rem 1.5rem;border-bottom:1px solid rgba(0,229,255,0.1);}
+    .km-bar-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem;}
+    .km-bar-lbl{font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:rgba(0,229,255,0.4);letter-spacing:0.15em;text-transform:uppercase;}
+    .km-bar-val{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:#00e5ff;}
+    .km-track{height:5px;background:rgba(0,229,255,0.07);border-radius:3px;overflow:hidden;}
+    .km-fill{height:100%;background:linear-gradient(90deg,#00e5ff,rgba(0,229,255,0.5));border-radius:3px;width:0%;transition:width 1.2s cubic-bezier(.25,.46,.45,.94);}
+    .km-goal{font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:rgba(0,229,255,0.22);margin-top:0.3rem;text-align:right;}
+    .mstat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(0,229,255,0.08);}
+    .mstat{background:#0a0e16;padding:1.3rem 1.5rem;position:relative;overflow:hidden;}
+    .mstat::before{content:'';position:absolute;top:0;left:0;width:2px;height:0;background:#00e5ff;transition:height 0.4s;}
+    .mstat:hover::before{height:100%;}
+    .mstat-num{font-family:'Rajdhani',sans-serif;font-size:1.7rem;font-weight:700;color:#00e5ff;line-height:1;}
+    .mstat-lbl{font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:rgba(0,229,255,0.38);letter-spacing:0.15em;text-transform:uppercase;margin-top:0.3rem;}
+    .mstat-timer .mstat-num{font-size:1.05rem;color:#7fff6e;line-height:1.3;}
+
     @media(max-width:900px){
       .bio-grid,.moto-layout,.guitar-layout{grid-template-columns:1fr;gap:2rem;}
     }
@@ -103,33 +123,65 @@
         <div class="spec-row"><span class="spec-key">Hubraum</span><span class="spec-val">649 cc</span></div>
         <div class="spec-row"><span class="spec-key">Leistung</span><span class="spec-val">68 PS</span></div>
         <div class="spec-row"><span class="spec-key">Typ</span><span class="spec-val">Naked Bike</span></div>
-        <div class="spec-row"><span class="spec-key">Fahrer seit</span><span class="spec-val accent" id="seit-jahr">2021</span></div>
+        <div class="spec-row"><span class="spec-key">Fahrer seit</span><span class="spec-val accent" id="seit-jahr">März 2026</span></div>
         <div class="spec-row">
-          <span class="spec-key">Kilometer</span>
+          <span class="spec-key">Tacho</span>
+          <span class="spec-val accent" id="km-total-display">— km</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-key">Meine km</span>
           <span class="spec-val accent" id="km-display">— km</span>
         </div>
       </div>
       <div class="km-box">
-        <label>Kilometerstand eintragen</label>
+        <label>Tacho-Stand (gesamt)</label>
         <div class="km-input-wrap">
-          <input class="km-input" type="number" id="kmInput" placeholder="z.B. 12500" min="0"/>
+          <input class="km-input" type="number" id="kmTotalInput" placeholder="z.B. 7706" min="0"/>
+          <button class="btn btn-sm" onclick="saveKmTotal()"><span>Speichern</span></button>
+        </div>
+        <label style="margin-top:0.8rem;display:block;">Meine gefahrenen km</label>
+        <div class="km-input-wrap">
+          <input class="km-input" type="number" id="kmInput" placeholder="z.B. 1500" min="0"/>
           <button class="btn btn-sm" onclick="saveKm()"><span>Speichern</span></button>
         </div>
         <div class="km-note">Wird lokal gespeichert</div>
       </div>
     </div>
     <div class="reveal">
-      <div class="timer-card" style="margin-bottom:1rem;">
-        <div class="timer-label">// Fahrer seit</div>
-        <div class="timer-display" id="timerDisplay">—</div>
-        <div class="timer-since" id="timerSince">seit 01.01.2021</div>
-      </div>
-      <div class="timer-card">
-        <div class="timer-label">// Startdatum anpassen</div>
-        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
-          <input type="date" id="startDate" style="flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--heading);font-family:'Share Tech Mono',monospace;font-size:0.8rem;padding:0.6rem;outline:none;" onchange="updateTimer()"/>
+      <div class="moto-stats-card">
+        <!-- Tachometer -->
+        <div class="tacho-wrap">
+          <canvas id="tachoCanvas"></canvas>
+          <div class="tacho-hint">// Simulation · km/h</div>
         </div>
-        <div class="km-note" style="margin-top:0.5rem;">Startdatum deiner Z650</div>
+        <!-- KM-Balken -->
+        <div class="km-bar-section">
+          <div class="km-bar-top">
+            <span class="km-bar-lbl">// Kilometerstand</span>
+            <span class="km-bar-val" id="kmBarVal">0 km</span>
+          </div>
+          <div class="km-track"><div class="km-fill" id="kmFill"></div></div>
+          <div class="km-goal">Ziel: 50'000 km</div>
+        </div>
+        <!-- Stats 2x2 -->
+        <div class="mstat-grid">
+          <div class="mstat">
+            <div class="mstat-num">Z650</div>
+            <div class="mstat-lbl">// Modell</div>
+          </div>
+          <div class="mstat">
+            <div class="mstat-num">68<span style="font-size:1rem"> PS</span></div>
+            <div class="mstat-lbl">// Leistung</div>
+          </div>
+          <div class="mstat">
+            <div class="mstat-num">649<span style="font-size:1rem">cc</span></div>
+            <div class="mstat-lbl">// Hubraum</div>
+          </div>
+          <div class="mstat mstat-timer">
+            <div class="mstat-num" id="timerDisplay">—</div>
+            <div class="mstat-lbl">// Fahrer seit März '26</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -178,37 +230,179 @@
 </footer>
 
 <script>
-// ── Kawasaki Timer ──
-function updateTimer() {
-  const stored = localStorage.getItem('motoStart') || '2021-01-01';
-  const input  = document.getElementById('startDate');
-  if (!input.value) input.value = stored;
+// ══════════════════════════════════════════════
+// TACHOMETER
+// Arc: clockwise from 200° to 340°, centre at bottom of canvas.
+// speed=0 → 200°, speed=90 → 270° (top), speed=180 → 340°
+// ══════════════════════════════════════════════
+const T_W = 320, T_H = 160, T_CX = 160, T_CY = 160, T_R = 142;
 
-  const start = new Date(input.value);
-  const now   = new Date();
-  const diff  = now - start;
-
-  const years   = Math.floor(diff / (1000*60*60*24*365.25));
-  const months  = Math.floor((diff % (1000*60*60*24*365.25)) / (1000*60*60*24*30.44));
-  const days    = Math.floor((diff % (1000*60*60*24*30.44))  / (1000*60*60*24));
-
-  let txt = '';
-  if (years > 0)  txt += `${years} Jahr${years>1?'e':''}`;
-  if (months > 0) txt += (txt ? ', ' : '') + `${months} Monat${months>1?'e':''}`;
-  if (days > 0 && years === 0) txt += (txt ? ', ' : '') + `${days} Tag${days>1?'e':''}`;
-
-  document.getElementById('timerDisplay').textContent = txt || '0 Tage';
-  const d = start.toLocaleDateString('de-CH');
-  document.getElementById('timerSince').textContent = `seit ${d}`;
-  localStorage.setItem('motoStart', input.value);
+function speedToRad(s) {
+  return (200 + (Math.max(0, Math.min(180, s)) / 180) * 140) * Math.PI / 180;
 }
 
-// ── KM ──
+function drawTacho(ctx, speed) {
+  speed = Math.max(0, Math.min(180, speed));
+  ctx.clearRect(0, 0, T_W, T_H);
+  ctx.fillStyle = '#06080d';
+  ctx.fillRect(0, 0, T_W, T_H);
+
+  const sa = speedToRad(0);
+  const ea = speedToRad(180);
+  const ca = speedToRad(speed);
+
+  // Track
+  ctx.beginPath();
+  ctx.arc(T_CX, T_CY, T_R, sa, ea, false);
+  ctx.strokeStyle = 'rgba(0,229,255,0.07)';
+  ctx.lineWidth = 10;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Active arc
+  ctx.beginPath();
+  ctx.arc(T_CX, T_CY, T_R, sa, ca, false);
+  ctx.strokeStyle = '#00e5ff';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.shadowBlur = 7;
+  ctx.shadowColor = 'rgba(0,229,255,0.55)';
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Danger zone arc (120–180 km/h)
+  ctx.beginPath();
+  ctx.arc(T_CX, T_CY, T_R, speedToRad(120), ea, false);
+  ctx.strokeStyle = 'rgba(255,60,110,0.18)';
+  ctx.lineWidth = 10;
+  ctx.stroke();
+
+  // Tick marks + labels
+  for (let i = 0; i <= 18; i++) {
+    const s = i * 10;
+    const a = speedToRad(s);
+    const major = i % 3 === 0;
+    const r1 = T_R + 4, r2 = major ? T_R - 13 : T_R - 6;
+    ctx.beginPath();
+    ctx.moveTo(T_CX + r1 * Math.cos(a), T_CY + r1 * Math.sin(a));
+    ctx.lineTo(T_CX + r2 * Math.cos(a), T_CY + r2 * Math.sin(a));
+    ctx.strokeStyle = major ? 'rgba(0,229,255,0.65)' : 'rgba(0,229,255,0.2)';
+    ctx.lineWidth = major ? 1.5 : 0.8;
+    ctx.stroke();
+    if (s % 60 === 0) {
+      const lr = T_R - 28;
+      ctx.fillStyle = 'rgba(0,229,255,0.52)';
+      ctx.font = '10px "Share Tech Mono",monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(s, T_CX + lr * Math.cos(a), T_CY + lr * Math.sin(a));
+    }
+  }
+
+  // Speed number
+  ctx.fillStyle = 'rgba(0,229,255,0.88)';
+  ctx.font = 'bold 32px Rajdhani,sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(Math.round(speed), T_CX, T_CY - 72);
+  ctx.fillStyle = 'rgba(0,229,255,0.28)';
+  ctx.font = '9px "Share Tech Mono",monospace';
+  ctx.fillText('KM/H', T_CX, T_CY - 50);
+
+  // Needle glow + needle
+  const na = speedToRad(speed);
+  const nl = T_R * 0.83, nb = 11;
+  const nx0 = T_CX - nb * Math.cos(na), ny0 = T_CY - nb * Math.sin(na);
+  const nx1 = T_CX + nl * Math.cos(na), ny1 = T_CY + nl * Math.sin(na);
+  ctx.beginPath(); ctx.moveTo(nx0, ny0); ctx.lineTo(nx1, ny1);
+  ctx.strokeStyle = 'rgba(255,60,110,0.18)'; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(nx0, ny0); ctx.lineTo(nx1, ny1);
+  ctx.strokeStyle = '#ff3c6e'; ctx.lineWidth = 2;
+  ctx.shadowBlur = 5; ctx.shadowColor = '#ff3c6e'; ctx.stroke(); ctx.shadowBlur = 0;
+
+  // Centre cap
+  ctx.beginPath(); ctx.arc(T_CX, T_CY, 8, 0, Math.PI * 2);
+  ctx.fillStyle = '#ff3c6e'; ctx.fill();
+  ctx.beginPath(); ctx.arc(T_CX, T_CY, 4, 0, Math.PI * 2);
+  ctx.fillStyle = '#06080d'; ctx.fill();
+}
+
+function startWobble(ctx, target) {
+  let w = 0;
+  (function frame() {
+    w += 0.1;
+    drawTacho(ctx, target + Math.sin(w * 2.5) * Math.exp(-w * 0.6) * 5);
+    if (w < Math.PI * 3) requestAnimationFrame(frame);
+    else drawTacho(ctx, target);
+  })();
+}
+
+function initTacho() {
+  const canvas = document.getElementById('tachoCanvas');
+  if (!canvas) return;
+  canvas.width = T_W; canvas.height = T_H;
+  const ctx = canvas.getContext('2d');
+  drawTacho(ctx, 0);
+  const target = 60 + Math.random() * 80;
+  let startT = null, current = 0;
+  setTimeout(() => {
+    (function sweep(ts) {
+      if (!startT) startT = ts;
+      const p = Math.min((ts - startT) / 2200, 1);
+      current = target * (1 - Math.pow(1 - p, 3));
+      drawTacho(ctx, current);
+      if (p < 1) requestAnimationFrame(sweep);
+      else startWobble(ctx, target);
+    })(performance.now());
+  }, 400);
+}
+
+// ══════════════════════════════════════════════
+// KM BAR
+// ══════════════════════════════════════════════
+const KM_GOAL = 50000;
+
+function updateKmBar(km) {
+  const n = parseInt(km) || 0;
+  const fill = document.getElementById('kmFill');
+  const val  = document.getElementById('kmBarVal');
+  if (fill) fill.style.width = Math.min(n / KM_GOAL * 100, 100).toFixed(2) + '%';
+  if (val)  val.textContent  = n.toLocaleString('de-CH') + ' km';
+}
+
+// ══════════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════════
+function updateTimer() {
+  const start = new Date(localStorage.getItem('motoStart') || '2026-03-01');
+  const diff  = Date.now() - start;
+  const years  = Math.floor(diff / (1000*60*60*24*365.25));
+  const months = Math.floor((diff % (1000*60*60*24*365.25)) / (1000*60*60*24*30.44));
+  const days   = Math.floor((diff % (1000*60*60*24*30.44))  / (1000*60*60*24));
+  let txt = '';
+  if (years  > 0) txt += `${years}J`;
+  if (months > 0) txt += (txt ? ' ' : '') + `${months}M`;
+  if (years  === 0 && days > 0) txt += (txt ? ' ' : '') + `${days}T`;
+  const el = document.getElementById('timerDisplay');
+  if (el) el.textContent = txt || '0T';
+}
+
+// ══════════════════════════════════════════════
+// KM INPUT
+// ══════════════════════════════════════════════
+function saveKmTotal() {
+  const v = document.getElementById('kmTotalInput').value;
+  if (!v) return;
+  localStorage.setItem('motoKmTotal', v);
+  document.getElementById('km-total-display').textContent = Number(v).toLocaleString('de-CH') + ' km';
+}
+
 function saveKm() {
   const v = document.getElementById('kmInput').value;
   if (!v) return;
   localStorage.setItem('motoKm', v);
   document.getElementById('km-display').textContent = Number(v).toLocaleString('de-CH') + ' km';
+  updateKmBar(v);
 }
 
 // ── Guitar ──
@@ -235,8 +429,17 @@ function previewImg(input) {
 // ── Load saved ──
 window.addEventListener('load', () => {
   updateTimer();
-  const km = localStorage.getItem('motoKm');
-  if (km) { document.getElementById('km-display').textContent = Number(km).toLocaleString('de-CH') + ' km'; document.getElementById('kmInput').value = km; }
+  initTacho();
+  const kmTotal = localStorage.getItem('motoKmTotal') || '7706';
+  localStorage.setItem('motoKmTotal', kmTotal);
+  document.getElementById('km-total-display').textContent = Number(kmTotal).toLocaleString('de-CH') + ' km';
+  document.getElementById('kmTotalInput').value = kmTotal;
+
+  const km = localStorage.getItem('motoKm') || '1500';
+  localStorage.setItem('motoKm', km);
+  document.getElementById('km-display').textContent = Number(km).toLocaleString('de-CH') + ' km';
+  document.getElementById('kmInput').value = km;
+  updateKmBar(km);
   const gm = localStorage.getItem('guitarModel');
   if (gm) { document.getElementById('guitarModel').textContent = gm; document.getElementById('guitarInput').value = gm; }
   setInterval(updateTimer, 60000);
