@@ -18,7 +18,7 @@ Persönliche Portfolio-Website von Mir
 ## Geplante Erweiterungen
 
 - [ ] Guild Wars 2 API — Live-Account-Daten
-- [ ] Overwatch Stats
+- [ ] Overwatch Stats - Mit API und Peak im Rank
 - [ ] Kawasaki Rideology — Touren-Logs (manuell exportiert)
 - [ ] Mehr Länder auf der Karte
 
