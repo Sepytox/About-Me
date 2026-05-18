@@ -43,6 +43,8 @@
     .nc-title{font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700;text-transform:uppercase;color:var(--heading);letter-spacing:0.05em;margin-bottom:0.4rem;}
     .nc-sub{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;}
     @media(max-width:900px){#home{padding:0 1.5rem;}.hero-inner{grid-template-columns:1fr;}.panel-wrap{display:none;}.nav-grid{grid-template-columns:1fr 1fr;}}
+    .h-eye.typing::after{content:'█';animation:blink-cur 0.7s step-end infinite;color:var(--accent);margin-left:2px;font-size:0.6em;}
+    @keyframes blink-cur{50%{opacity:0;}}
   </style>
 </head>
 <body>
@@ -106,6 +108,24 @@
   <div class="ftxt">© 2026 <span>Miro Lacoste</span> — Zürich, CH</div>
   <div class="ftxt">Design mit <span>Claude AI</span></div>
 </footer>
-<script>document.querySelectorAll('.reveal').forEach(r=>{new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:0.1}).observe(r);});</script>
+<script>
+document.querySelectorAll('.reveal').forEach(r=>{new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:0.1}).observe(r);});
+
+// Typewriter on hero eyebrow
+(function(){
+  var el = document.querySelector('.h-eye');
+  if (!el) return;
+  var text = el.textContent.trim();
+  el.textContent = '';
+  el.classList.add('typing');
+  var i = 0;
+  setTimeout(function() {
+    var t = setInterval(function() {
+      el.textContent += text[i++];
+      if (i >= text.length) { clearInterval(t); setTimeout(function(){ el.classList.remove('typing'); }, 800); }
+    }, 45);
+  }, 900);
+})();
+</script>
 </body>
 </html>
